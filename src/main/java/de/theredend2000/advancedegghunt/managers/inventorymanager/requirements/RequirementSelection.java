@@ -18,9 +18,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import java.util.Random;
 
 public class RequirementSelection extends InventoryMenu {
-    private MessageManager messageManager;
     protected int maxItems;
-    private Main plugin;
+    private final MessageManager messageManager;
+    private final Main plugin;
 
     public RequirementSelection(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Requirements - Selection", (short) 54, XMaterial.WHITE_STAINED_GLASS_PANE);
@@ -61,7 +61,7 @@ public class RequirementSelection extends InventoryMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent event) {
-        Player player  = (Player) event.getWhoClicked();
+        Player player = (Player) event.getWhoClicked();
         SoundManager soundManager = plugin.getSoundManager();
 
         String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());

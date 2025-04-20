@@ -13,12 +13,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class PlayerInteractItemEvent implements Listener {
 
-    public PlayerInteractItemEvent(){
+    public PlayerInteractItemEvent() {
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
     }
 
     @EventHandler
-    public void onDrop(PlayerDropItemEvent event){
+    public void onDrop(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
         if (event.getItemDrop().getItemStack().getItemMeta() == null ||
                 !event.getItemDrop().getItemStack().getItemMeta().hasLocalizedName()) {
@@ -32,14 +32,13 @@ public class PlayerInteractItemEvent implements Listener {
             return;
         }
 
-        if (event.getItemDrop().getItemStack().getItemMeta().getLocalizedName().equals("egghunt.eggs")){
+        if (event.getItemDrop().getItemStack().getItemMeta().getLocalizedName().equals("egghunt.eggs")) {
             event.setCancelled(true);
-            return;
         }
     }
 
     @EventHandler
-    public void onInteract(PlayerInteractEvent event){
+    public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (event.getItem() == null ||
                 !event.getItem().getType().equals(Material.NETHER_STAR) ||

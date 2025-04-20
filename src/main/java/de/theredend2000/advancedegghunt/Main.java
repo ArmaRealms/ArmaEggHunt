@@ -1,18 +1,34 @@
 package de.theredend2000.advancedegghunt;
 
 import com.cryptomorin.xseries.XMaterial;
-import de.theredend2000.advancedegghunt.bstats.Metrics;
 import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.configurations.PluginConfig;
-import de.theredend2000.advancedegghunt.listeners.*;
-import de.theredend2000.advancedegghunt.managers.*;
+import de.theredend2000.advancedegghunt.listeners.BlockBreakEventListener;
+import de.theredend2000.advancedegghunt.listeners.BlockPlaceEventListener;
+import de.theredend2000.advancedegghunt.listeners.EntityChangeListener;
+import de.theredend2000.advancedegghunt.listeners.InventoryClickEventListener;
+import de.theredend2000.advancedegghunt.listeners.InventoryCloseEventListener;
+import de.theredend2000.advancedegghunt.listeners.OraxenFurniturePlaceEventListener;
+import de.theredend2000.advancedegghunt.listeners.PlayerChatEventListener;
+import de.theredend2000.advancedegghunt.listeners.PlayerConnectionListener;
+import de.theredend2000.advancedegghunt.listeners.PlayerInteractEventListener;
+import de.theredend2000.advancedegghunt.listeners.PlayerInteractItemEvent;
+import de.theredend2000.advancedegghunt.managers.CooldownManager;
+import de.theredend2000.advancedegghunt.managers.ExtraManager;
+import de.theredend2000.advancedegghunt.managers.PermissionManager;
+import de.theredend2000.advancedegghunt.managers.RequirementsManager;
+import de.theredend2000.advancedegghunt.managers.SoundManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggDataManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
-import de.theredend2000.advancedegghunt.util.*;
+import de.theredend2000.advancedegghunt.util.Converter;
+import de.theredend2000.advancedegghunt.util.Downloader;
+import de.theredend2000.advancedegghunt.util.HexColor;
+import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.util.Updater;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
@@ -25,19 +41,26 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public final class Main extends JavaPlugin {
 
+    private static final HashMap<UUID, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
+    public static String PREFIX = "";
+    public static boolean setupDefaultCollection;
     private static Main plugin;
-    private DatetimeUtils datetimeUtils;
-    private Map<String, Long> refreshCooldown;
-    private ArrayList<Player> placeEggsPlayers;
-    private HashMap<Player, Integer> playerAddCommand;
-    private ArrayList<ArmorStand> showedArmorstands;
     public YamlConfiguration messages;
     public File messagesData;
-    private HashMap<Player, LeaderboardSortTypes> sortTypeLeaderboard;
+    private DatetimeUtils datetimeUtils;
+    private Map<String, Long> refreshCooldown;
+    private ArrayList<UUID> placeEggsPlayers;
+    private HashMap<UUID, Integer> playerAddCommand;
+    private ArrayList<ArmorStand> showedArmorstands;
+    private HashMap<UUID, LeaderboardSortTypes> sortTypeLeaderboard;
     private PluginConfig pluginConfig;
     private CooldownManager cooldownManager;
     private EggDataManager eggDataManager;
@@ -50,8 +73,39 @@ public final class Main extends JavaPlugin {
     private IndividualPresetDataManager individualPresetDataManager;
     private GlobalPresetDataManager globalPresetDataManager;
     private MessageManager messageManager;
-    public static String PREFIX = "";
-    public static boolean setupDefaultCollection;
+
+    public static XMaterial getMaterial(String materialString) {
+        try {
+            return XMaterial.valueOf(materialString);
+        } catch (Exception ex) {
+            Bukkit.getConsoleSender().sendMessage("§4Material Error: " + ex);
+            return XMaterial.BARRIER;
+        }
+    }
+
+    public static Main getInstance() {
+        return plugin;
+    }
+
+    public static String getTexture(String texture) {
+        String prefix = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUv";
+        texture = prefix + texture;
+        return texture;
+    }
+
+    public static PlayerMenuUtility getPlayerMenuUtility(Player player) {
+        PlayerMenuUtility playerMenuUtility;
+        if (!(playerMenuUtilityMap.containsKey(player.getUniqueId()))) {
+
+            playerMenuUtility = new PlayerMenuUtility(player);
+            playerMenuUtilityMap.put(player.getUniqueId(), playerMenuUtility);
+
+            return playerMenuUtility;
+        } else {
+            return playerMenuUtilityMap.get(player.getUniqueId());
+        }
+    }
+
     @Override
     public void onEnable() {
         plugin = this;
@@ -59,8 +113,7 @@ public final class Main extends JavaPlugin {
         new Downloader();
         setupDefaultCollection = false;
         PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', pluginConfig.getPrefix()));
-        Metrics metrics = new Metrics(this, 19495);
-        refreshCooldown = new HashMap<String, Long>();
+        refreshCooldown = new HashMap<>();
         placeEggsPlayers = new ArrayList<>();
         showedArmorstands = new ArrayList<>();
         playerAddCommand = new HashMap<>();
@@ -78,10 +131,10 @@ public final class Main extends JavaPlugin {
         getEggManager().convertEggData();
         initData();
         sendCurrentLanguage();
-        if(setupDefaultCollection) {
+        if (setupDefaultCollection) {
             getRequirementsManager().changeActivity("default", true);
             getRequirementsManager().resetReset("default");
-            getGlobalPresetDataManager().loadPresetIntoCollectionCommands(getPluginConfig().getDefaultGlobalLoadingPreset(),"default");
+            getGlobalPresetDataManager().loadPresetIntoCollectionCommands(getPluginConfig().getDefaultGlobalLoadingPreset(), "default");
         }
         playerEggDataManager.checkReset();
         eggManager.spawnEggParticle();
@@ -94,24 +147,24 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         giveAllItemsBack();
-        for(ArmorStand a : showedArmorstands){
+        for (ArmorStand a : showedArmorstands) {
             a.remove();
         }
     }
 
-    private void initData(){
-        List<String > eggCollections = eggDataManager.savedEggCollections();
+    private void initData() {
+        List<String> eggCollections = eggDataManager.savedEggCollections();
         List<UUID> playerCollection = eggDataManager.savedPlayers();
         playerEggDataManager.initPlayers();
         Bukkit.getConsoleSender().sendMessage("§2§l" +
                 "Loaded data of " + playerCollection.size() + " player(s).");
         eggDataManager.initEggs();
         Bukkit.getConsoleSender().sendMessage("§2§lLoaded data of " + eggCollections.size() + " collection(s).");
-        for(String collection : eggCollections)
+        for (String collection : eggCollections)
             eggManager.updateMaxEggs(collection);
     }
 
-    private void initManagers(){
+    private void initManagers() {
         individualPresetDataManager = new IndividualPresetDataManager(this);
         globalPresetDataManager = new GlobalPresetDataManager(this);
         messageManager = new MessageManager();
@@ -124,7 +177,7 @@ public final class Main extends JavaPlugin {
         permissionManager = new PermissionManager();
     }
 
-    private void initListeners(){
+    private void initListeners() {
         new InventoryClickEventListener();
         new InventoryCloseEventListener();
         new BlockPlaceEventListener();
@@ -140,20 +193,20 @@ public final class Main extends JavaPlugin {
         }
     }
 
-    private void giveAllItemsBack(){
-        for(Player player : Bukkit.getServer().getOnlinePlayers()){
-            if(placeEggsPlayers.contains(player)){
+    private void giveAllItemsBack() {
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            if (placeEggsPlayers.contains(player.getUniqueId())) {
                 eggManager.finishEggPlacing(player);
             }
         }
     }
 
-    private void sendCurrentLanguage(){
+    private void sendCurrentLanguage() {
         String lang = pluginConfig.getLanguage();
         Bukkit.getConsoleSender().sendMessage(PREFIX + "§7Language §6" + lang + " §7detected. File messages-" + lang + ".yml loaded.");
     }
 
-    private void setupConfigs(){
+    private void setupConfigs() {
         pluginConfig = PluginConfig.getInstance(plugin);
     }
 
@@ -165,50 +218,14 @@ public final class Main extends JavaPlugin {
         }
     }
 
-    public static XMaterial getMaterial(String materialString) {
-        try {
-            XMaterial material = XMaterial.valueOf(materialString);
-            if (material == null) {
-                return XMaterial.BARRIER;
-            }
-            return material;
-        } catch (Exception ex) {
-            Bukkit.getConsoleSender().sendMessage("§4Material Error: " + ex);
-            return XMaterial.STONE;
-        }
-    }
-
-
-    public static Main getInstance() {
-        return plugin;
-    }
-
-    public PluginConfig getPluginConfig(){
+    public PluginConfig getPluginConfig() {
         return pluginConfig;
     }
 
-    public static String getTexture(String texture){
-        String prefix = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUv";
-        texture = prefix + texture;
-        return texture;
-    }
-    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
-    public static PlayerMenuUtility getPlayerMenuUtility(Player p) {
-        PlayerMenuUtility playerMenuUtility;
-        if (!(playerMenuUtilityMap.containsKey(p))) {
-
-            playerMenuUtility = new PlayerMenuUtility(p);
-            playerMenuUtilityMap.put(p, playerMenuUtility);
-
-            return playerMenuUtility;
-        } else {
-            return playerMenuUtilityMap.get(p);
-        }
-    }
-
-    public ArrayList<Player> getPlaceEggsPlayers() {
+    public List<UUID> getPlaceEggsPlayers() {
         return placeEggsPlayers;
     }
+
     public Map<String, Long> getRefreshCooldown() {
         return refreshCooldown;
     }
@@ -217,15 +234,15 @@ public final class Main extends JavaPlugin {
         return datetimeUtils;
     }
 
-    public ArrayList<ArmorStand> getShowedArmorstands() {
+    public List<ArmorStand> getShowedArmorstands() {
         return showedArmorstands;
     }
 
-    public HashMap<Player, Integer> getPlayerAddCommand() {
+    public Map<UUID, Integer> getPlayerAddCommand() {
         return playerAddCommand;
     }
 
-    public HashMap<Player, LeaderboardSortTypes> getSortTypeLeaderboard() {
+    public Map<UUID, LeaderboardSortTypes> getSortTypeLeaderboard() {
         return sortTypeLeaderboard;
     }
 
@@ -251,10 +268,6 @@ public final class Main extends JavaPlugin {
 
     public PlayerEggDataManager getPlayerEggDataManager() {
         return playerEggDataManager;
-    }
-
-    public static HashMap<Player, PlayerMenuUtility> getPlayerMenuUtilityMap() {
-        return playerMenuUtilityMap;
     }
 
     public RequirementsManager getRequirementsManager() {

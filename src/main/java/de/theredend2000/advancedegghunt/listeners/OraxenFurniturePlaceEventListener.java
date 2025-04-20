@@ -15,13 +15,14 @@ import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.UUID;
 
 public class OraxenFurniturePlaceEventListener implements Listener {
     private final PermissionManager permissionManager = Main.getInstance().getPermissionManager();
     private final EggManager eggManager = Main.getInstance().getEggManager();
     private final SoundManager soundManager = Main.getInstance().getSoundManager();
     private final MessageManager messageManager = Main.getInstance().getMessageManager();
-    private final List<Player> placeEggsPlayers = Main.getInstance().getPlaceEggsPlayers();
+    private final List<UUID> placeEggsPlayers = Main.getInstance().getPlaceEggsPlayers();
 
 
     public OraxenFurniturePlaceEventListener() {
@@ -31,7 +32,7 @@ public class OraxenFurniturePlaceEventListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onOraxenFurniturePlace(@NotNull OraxenFurniturePlaceEvent event) {
         Player player = event.getPlayer();
-        if (!placeEggsPlayers.contains(player)) return;
+        if (!placeEggsPlayers.contains(player.getUniqueId())) return;
 
         if (permissionManager.checkPermission(player, Permission.PlaceEgg)) {
             String collection = eggManager.getEggCollectionFromPlayerData(player.getUniqueId());

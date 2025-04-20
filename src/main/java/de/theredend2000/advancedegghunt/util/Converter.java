@@ -7,13 +7,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public class Converter {
 
-    private Main plugin;
+    private final Main plugin;
 
-    public Converter(){
+    public Converter() {
         this.plugin = Main.getInstance();
     }
 
-    public void convertAllSystems(){
+    public void convertAllSystems() {
         convertToNewCommandSystem();
     }
 
@@ -45,7 +45,7 @@ public class Converter {
                         eggRewardsSection.set(nextNumber + ".command", command);
                         eggRewardsSection.set(nextNumber + ".enabled", enabled);
                     }
-                }else if (placedEggs.getInt("Rewards." + rewardsID + ".type") == 1) {
+                } else if (placedEggs.getInt("Rewards." + rewardsID + ".type") == 1) {
                     ConfigurationSection eggRewardsSection = placedEggs.getConfigurationSection("GlobalRewards");
                     if (eggRewardsSection == null) {
                         eggRewardsSection = placedEggs.createSection("GlobalRewards");

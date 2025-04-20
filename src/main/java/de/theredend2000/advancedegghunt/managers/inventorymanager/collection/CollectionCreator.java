@@ -17,7 +17,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import java.util.Collections;
 
 public class CollectionCreator extends InventoryMenu {
-    private MessageManager messageManager;
+    private final MessageManager messageManager;
     private String name;
     private boolean enabled;
 
@@ -104,7 +104,7 @@ public class CollectionCreator extends InventoryMenu {
                     Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
                     Main.getInstance().getRequirementsManager().changeActivity(name, true);
                     Main.getInstance().getRequirementsManager().resetReset(name);
-                    Main.getInstance().getGlobalPresetDataManager().loadPresetIntoCollectionCommands(Main.getInstance().getPluginConfig().getDefaultGlobalLoadingPreset(),name);
+                    Main.getInstance().getGlobalPresetDataManager().loadPresetIntoCollectionCommands(Main.getInstance().getPluginConfig().getDefaultGlobalLoadingPreset(), name);
                     Main.getInstance().getEggManager().spawnEggParticle();
                 } else
                     player.sendMessage("§cThe name of the collection is already chosen.");

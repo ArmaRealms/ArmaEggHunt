@@ -17,9 +17,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class RequirementSeason extends InventoryMenu {
-    private MessageManager messageManager;
     protected int maxItems;
-    private Main plugin;
+    private final MessageManager messageManager;
+    private final Main plugin;
 
     public RequirementSeason(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Requirements - Season", (short) 54, XMaterial.WHITE_STAINED_GLASS_PANE);
@@ -37,7 +37,7 @@ public class RequirementSeason extends InventoryMenu {
     }
 
     private void addMenuBorderButtons(String collection) {
-        inventoryContent[4]  = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§6" + collection).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).build();
+        inventoryContent[4] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§6" + collection).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build();
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§eBack").setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).build();
     }
@@ -45,14 +45,14 @@ public class RequirementSeason extends InventoryMenu {
     private void menuContent(String collection) {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         getInventory().setContents(inventoryContent);
-        for(String season : new ArrayList<>(DateTimeUtil.getSeasonList())){
+        for (String season : new ArrayList<>(DateTimeUtil.getSeasonList())) {
             boolean enabled = placedEggs.getBoolean("Requirements.Season." + season);
-            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.OAK_LEAVES : XMaterial.RED_STAINED_GLASS).setDisplayname("§6" + season).setLore(getSeasonInformation(Seasons.valueOf(season)), "§7Makes that the eggs are only", "§7available in the season " + season, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" " + season + " to the requirements.").withGlow(enabled).build());
+            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.OAK_LEAVES : XMaterial.RED_STAINED_GLASS).setDisplayname("§6" + season).setLore(getSeasonInformation(Seasons.valueOf(season)), "§7Makes that the eggs are only", "§7available in the season " + season, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to " + (enabled ? "remove" : "add") + " " + season + " to the requirements.").withGlow(enabled).build());
         }
     }
 
-    private String getSeasonInformation(Seasons seasons){
-        switch (seasons){
+    private String getSeasonInformation(Seasons seasons) {
+        switch (seasons) {
             case Winter:
                 return "§8December | January | February";
             case Summer:
@@ -69,7 +69,7 @@ public class RequirementSeason extends InventoryMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent event) {
-        Player player  = (Player) event.getWhoClicked();
+        Player player = (Player) event.getWhoClicked();
 
         String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);

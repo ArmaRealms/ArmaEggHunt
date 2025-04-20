@@ -34,7 +34,7 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
     }
 
     public void addMenuBorderButtons() {
-        if(Main.getInstance().getPermissionManager().checkPermission(playerMenuUtility.getOwner(), Permission.CreateCollection))
+        if (Main.getInstance().getPermissionManager().checkPermission(playerMenuUtility.getOwner(), Permission.CreateCollection))
             inventoryContent[51] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§5Add collection").setSkullOwner(Main.getTexture("NWQ4NjA0YjllMTk1MzY3Zjg1YTIzZDAzZDlkZDUwMzYzOGZjZmIwNWIwMDMyNTM1YmM0MzczNDQyMjQ4M2JkZSJ9fX0=")).build();
 
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build();
@@ -50,16 +50,16 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
 
         ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggCollections());
-        if(keys.isEmpty()){
+        if (keys.isEmpty()) {
             playerMenuUtility.getOwner().closeInventory();
             playerMenuUtility.getOwner().sendMessage("§cThere was an error please restart your server.");
             return;
         }
 
-        for(int i = 0; i < getMaxItemsPerPage(); i++) {
+        for (int i = 0; i < getMaxItemsPerPage(); i++) {
             index = getMaxItemsPerPage() * page + i;
             int slotIndex = ((9 + 1) + ((i / 7) * 9) + (i % 7));
-            if(index >= keys.size()) break;
+            if (index >= keys.size()) break;
             if (keys.get(index) == null) {
                 continue;
             }
@@ -80,9 +80,9 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
         return maxItemsPerPage;
     }
 
-    public int getMaxPages(){
+    public int getMaxPages() {
         int keys = Main.getInstance().getEggDataManager().savedEggCollections().size();
-        if(keys == 0) return 1;
+        if (keys == 0) return 1;
         return (int) Math.ceil((double) keys / getMaxItemsPerPage());
     }
 
@@ -93,7 +93,7 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
         Player player = (Player) event.getWhoClicked();
 
         ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggCollections());
-        for(String collection : keys){
+        for (String collection : keys) {
             if (!event.getCurrentItem().getItemMeta().hasLocalizedName() ||
                     !event.getCurrentItem().getItemMeta().getLocalizedName().equals(collection)) {
                 continue;
@@ -152,7 +152,7 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
                         player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                     }
                 } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Add collection")) {
-                    if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.CreateCollection)) {
+                    if (Main.getInstance().getPermissionManager().checkPermission(player, Permission.CreateCollection)) {
                         new CollectionCreator(Main.getPlayerMenuUtility(player)).open();
                         player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                     }

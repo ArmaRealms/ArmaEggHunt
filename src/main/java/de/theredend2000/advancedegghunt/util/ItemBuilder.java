@@ -19,56 +19,56 @@ public class ItemBuilder {
     private ItemMeta itemMeta;
     private ItemStack itemStack;
 
-    public ItemBuilder(XMaterial mat){
+    public ItemBuilder(XMaterial mat) {
         itemStack = mat.parseItem();
         itemMeta = itemStack.getItemMeta();
     }
 
-    public ItemBuilder(ItemStack itemStack){
+    public ItemBuilder(ItemStack itemStack) {
         this.itemStack = itemStack;
         this.itemMeta = itemStack.getItemMeta();
     }
 
-    public ItemBuilder setDisplayname(String s){
+    public ItemBuilder setDisplayname(String s) {
         itemMeta.setDisplayName(s);
         return this;
     }
 
-    public ItemBuilder setLocalizedName(String s){
+    public ItemBuilder setLocalizedName(String s) {
         itemMeta.setLocalizedName(s);
         return this;
     }
 
-    public ItemBuilder setOwner(String name){
+    public ItemBuilder setOwner(String name) {
         SkullMeta skullMeta = (SkullMeta) this.itemMeta;
         skullMeta.setOwner(name);
         return this;
     }
 
-    public ItemBuilder withGlow(boolean s){
-        if(s) {
+    public ItemBuilder withGlow(boolean s) {
+        if (s) {
             itemMeta.addEnchant(Enchantment.LURE, 1, true);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
         return this;
     }
 
-    public ItemBuilder setLore(String... s){
+    public ItemBuilder setLore(String... s) {
         itemMeta.setLore(Arrays.asList(s));
         return this;
     }
 
-    public ItemBuilder setDefaultLore(List<String> s){
+    public ItemBuilder setDefaultLore(List<String> s) {
         itemMeta.setLore(s);
         return this;
     }
 
-    public ItemBuilder setUnbreakable(boolean s){
+    public ItemBuilder setUnbreakable(boolean s) {
         itemMeta.setUnbreakable(s);
         return this;
     }
 
-    public ItemBuilder addItemFlags(ItemFlag... s){
+    public ItemBuilder addItemFlags(ItemFlag... s) {
         itemMeta.addItemFlags(s);
         return this;
     }
@@ -81,7 +81,7 @@ public class ItemBuilder {
                 '}';
     }
 
-    public ItemStack build(){
+    public ItemStack build() {
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }

@@ -21,7 +21,7 @@ import org.bukkit.inventory.EquipmentSlot;
 
 public class PlayerInteractEventListener implements Listener {
 
-    private MessageManager messageManager;
+    private final MessageManager messageManager;
 
     public PlayerInteractEventListener() {
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
@@ -37,10 +37,10 @@ public class PlayerInteractEventListener implements Listener {
         Action action = event.getAction();
 
         if ((!action.equals(Action.RIGHT_CLICK_BLOCK) ||
-                    !Main.getInstance().getPluginConfig().getRightClickEgg() ||
-                    event.getHand() != EquipmentSlot.HAND) &&
+                !Main.getInstance().getPluginConfig().getRightClickEgg() ||
+                event.getHand() != EquipmentSlot.HAND) &&
                 (!action.equals(Action.LEFT_CLICK_BLOCK) ||
-                    !Main.getInstance().getPluginConfig().getLeftClickEgg()) ||
+                        !Main.getInstance().getPluginConfig().getLeftClickEgg()) ||
                 event.getClickedBlock() == null ||
                 !eggManager.containsEgg(event.getClickedBlock()) ||
                 Main.getInstance().getPlaceEggsPlayers().contains(player)) {
@@ -51,13 +51,13 @@ public class PlayerInteractEventListener implements Listener {
                 continue;
             }
             String id = eggManager.getEggID(event.getClickedBlock(), collection);
-            if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.OpenRewards) && player.isSneaking()){
+            if (Main.getInstance().getPermissionManager().checkPermission(player, Permission.OpenRewards) && player.isSneaking()) {
                 new IndividualEggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
                 return;
             }
 
             FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
-            if(!placedEggs.getBoolean("Enabled")){
+            if (!placedEggs.getBoolean("Enabled")) {
                 player.sendMessage(messageManager.getMessage(MessageKey.COLLECTION_DISABLED));
                 return;
             }
@@ -67,12 +67,12 @@ public class PlayerInteractEventListener implements Listener {
                 return;
             }
 
-            if(!Main.getInstance().getRequirementsManager().canBeAccessed(collection)){
+            if (!Main.getInstance().getRequirementsManager().canBeAccessed(collection)) {
                 player.sendMessage(messageManager.getMessage(MessageKey.EGG_NOT_ACCESSED));
                 return;
             }
 
-            if(Main.getInstance().getRequirementsManager().getOverallTime(collection) > 0)
+            if (Main.getInstance().getRequirementsManager().getOverallTime(collection) > 0)
                 Main.getInstance().getPlayerEggDataManager().setResetTimer(player.getUniqueId(), collection, id);
 
             eggManager.saveFoundEggs(player, event.getClickedBlock(), id, collection);
@@ -82,7 +82,7 @@ public class PlayerInteractEventListener implements Listener {
                 extraManager.spawnFireworkRocket(loc.add(0.5, 1.5, 0.5));
             if (Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards()) {
                 player.playSound(player.getLocation(), soundManager.playEggFoundSound(), soundManager.getSoundVolume(), 1);
-                if(!placedEggs.contains("PlacedEggs." + id + ".Rewards.")) continue;
+                if (!placedEggs.contains("PlacedEggs." + id + ".Rewards.")) continue;
                 for (String commandID : placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false)) {
                     boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".enabled");
                     if (enabled) {
@@ -93,7 +93,7 @@ public class PlayerInteractEventListener implements Listener {
             }
             if (eggManager.checkFoundAll(player, collection)) {
                 player.playSound(player.getLocation(), soundManager.playAllEggsFound(), 1, 1);
-                if(!placedEggs.contains("GlobalRewards.")) continue;
+                if (!placedEggs.contains("GlobalRewards.")) continue;
                 for (String commandID : placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false)) {
                     boolean enabled = placedEggs.getBoolean("GlobalRewards." + commandID + ".enabled");
                     if (enabled) {

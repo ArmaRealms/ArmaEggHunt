@@ -28,8 +28,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
-    private MessageManager messageManager;
-    private Main plugin;
+    private final MessageManager messageManager;
+    private final Main plugin;
     private String id;
     private String collection;
 
@@ -56,7 +56,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         inventoryContent[46] = new ItemBuilder(XMaterial.EMERALD).setDisplayname("§5Load presets").setLore("§eClick to load or change presets.").build();
         inventoryContent[53] = new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayname("§5Create new reward").setLore("", "§bYou can also add custom items:", "§7For that get your custom item in your", "§7inventory and click it when this", "§7menu is open. The item will", "§7get converted into an command", "§7and can then used as the other commands.", "", "§eClick to create a new reward").build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§cClose").build();
-        inventoryContent[8] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§bSwitch to Individual").setOwner(playerMenuUtility.getOwner().getName()).setLore("","§6Switch to Individual:","§7Switching to individual lets you manage","§7all commands and preset for","§7the funktion if a player has found","§7§lone §7egg.","","§eClick to switch").build();
+        inventoryContent[8] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§bSwitch to Individual").setOwner(playerMenuUtility.getOwner().getName()).setLore("", "§6Switch to Individual:", "§7Switching to individual lets you manage", "§7all commands and preset for", "§7the funktion if a player has found", "§7§lone §7egg.", "", "§eClick to switch").build();
         inventoryContent[7] = new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setSkullOwner(Main.getTexture("MTY0MzlkMmUzMDZiMjI1NTE2YWE5YTZkMDA3YTdlNzVlZGQyZDUwMTVkMTEzYjQyZjQ0YmU2MmE1MTdlNTc0ZiJ9fX0="))
                 .setDisplayname("§9Information")
@@ -84,15 +84,15 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
 
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         ArrayList<String> keys = new ArrayList<>();
-        if(placedEggs.contains("GlobalRewards.")){
+        if (placedEggs.contains("GlobalRewards.")) {
             keys.addAll(placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false));
-        }else
+        } else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward", "§7or load a preset.").build());
-        if(keys != null && !keys.isEmpty()) {
-            for(int i = 0; i < maxItemsPerPage; i++) {
+        if (keys != null && !keys.isEmpty()) {
+            for (int i = 0; i < maxItemsPerPage; i++) {
                 index = maxItemsPerPage * page + i;
-                if(index >= keys.size()) break;
-                if (keys.get(index) != null){
+                if (index >= keys.size()) break;
+                if (keys.get(index) != null) {
                     String command = placedEggs.getString("GlobalRewards." + keys.get(index) + ".command").replaceAll("§", "&");
                     boolean enabled = placedEggs.getBoolean("GlobalRewards." + keys.get(index) + ".enabled");
                     boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
@@ -109,7 +109,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                     getInventory().addItem(new ItemBuilder(itemStack).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "", "§eLEFT-CLICK to toggle enabled.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
                 }
             }
-        }else
+        } else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward", "§7or load a preset.").build());
     }
 
@@ -121,7 +121,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         ItemStack itemStack;
 
         Optional<XMaterial> material;
-        if (metaDataStartIndex == -1){
+        if (metaDataStartIndex == -1) {
             material = XMaterial.matchXMaterial(itemString);
             if (material.isEmpty()) return XMaterial.PAPER.parseItem();
             return material.get().parseItem();
@@ -138,22 +138,22 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         return item;
     }
 
-    public int getMaxPages(){
+    public int getMaxPages() {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         ArrayList<String> keys = new ArrayList<>();
-        if(placedEggs.contains("GlobalRewards.")){
+        if (placedEggs.contains("GlobalRewards.")) {
             keys.addAll(placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false));
         }
-        if(keys.isEmpty()) return 1;
+        if (keys.isEmpty()) return 1;
         return (int) Math.ceil((double) keys.size() / maxItemsPerPage);
     }
 
-    public void convertItemIntoCommand(ItemStack itemStack, String collection){
+    public void convertItemIntoCommand(ItemStack itemStack, String collection) {
         String itemNBT = NBT.get(itemStack, Object::toString);
-        addCommand(MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount()), collection,"GlobalRewards.");
+        addCommand(MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount()), collection, "GlobalRewards.");
     }
 
-    private void addCommand(String command, String collection, String path){
+    private void addCommand(String command, String collection, String path) {
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         ConfigurationSection rewardsSection = placedEggs.getConfigurationSection("GlobalRewards.");
         int nextNumber = 0;
@@ -174,7 +174,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         Player player = (Player) event.getWhoClicked();
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
 
-        if(event.getClickedInventory().equals(player.getInventory())){
+        if (event.getClickedInventory().equals(player.getInventory())) {
             convertItemIntoCommand(event.getCurrentItem(), collection);
             player.sendMessage("§aSuccessfully added a new item.");
             menuContent(collection);
@@ -182,9 +182,9 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         }
 
         ArrayList<String> keys = new ArrayList<>();
-        if(placedEggs.contains("GlobalRewards.")){
+        if (placedEggs.contains("GlobalRewards.")) {
             keys.addAll(placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false));
-            for(String commandID : keys){
+            for (String commandID : keys) {
                 if (!event.getCurrentItem().getItemMeta().hasLocalizedName() ||
                         !event.getCurrentItem().getItemMeta().getLocalizedName().equals(commandID)) {
                     continue;
@@ -214,7 +214,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                 break;
             case GOLD_INGOT:
                 player.closeInventory();
-                Main.getInstance().getPlayerAddCommand().put(player, 120);
+                Main.getInstance().getPlayerAddCommand().put(player.getUniqueId(), 120);
                 TextComponent textComponent = new TextComponent("\n\n\n\n\n" + Main.getInstance().getMessageManager().getMessage(MessageKey.NEW_COMMAND) + "\n\n");
                 TextComponent clickme = new TextComponent("§9-----------§3§l[PLACEHOLDERS] §7(Hover)§9-----------");
                 clickme.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§2Available placeholders:\n§b- %PLAYER% --> Name of the player\n§b- & --> For color codes (&6=gold)\n§b- %EGGS_FOUND% --> How many eggs the player has found\n§b- %EGGS_MAX% --> How many eggs are placed\n§b- %PREFIX% --> The prefix of the plugin")));
@@ -241,7 +241,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                                     presetDataManager.loadCommandsIntoPreset(preset, collection);
                                     presetDataManager.addDefaultRewardCommands(preset);
                                     menuContent(collection);
-                                    open(id,collection);
+                                    open(id, collection);
                                     player.sendMessage(messageManager.getMessage(MessageKey.PRESET_SAVED).replaceAll("%PRESET%", preset));
                                 } else {
                                     player.sendMessage(messageManager.getMessage(MessageKey.PRESET_ALREADY_EXISTS).replaceAll("%PRESET%", preset));
@@ -280,7 +280,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                         player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                     }
                 } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Switch to Individual")) {
-                    new IndividualEggRewardsMenu(super.playerMenuUtility).open(id,collection);
+                    new IndividualEggRewardsMenu(super.playerMenuUtility).open(id, collection);
                 }
                 break;
         }

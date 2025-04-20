@@ -66,13 +66,13 @@ public class DatetimeUtils {
     public int[] getTimeValues(double seconds) {
         int[] values = new int[]{0, 0, 0, 0, 0, 0, 0};
 
-        for(int unitIndex = 0; unitIndex <= 5; ++unitIndex) {
-            int amountForUnit = (int)seconds / SECONDS_IN_UNIT[unitIndex];
+        for (int unitIndex = 0; unitIndex <= 5; ++unitIndex) {
+            int amountForUnit = (int) seconds / SECONDS_IN_UNIT[unitIndex];
             values[unitIndex] += amountForUnit;
-            seconds -= (double)(amountForUnit * SECONDS_IN_UNIT[unitIndex]);
+            seconds -= amountForUnit * SECONDS_IN_UNIT[unitIndex];
         }
 
-        values[6] += (int)Math.round(seconds);
+        values[6] += (int) Math.round(seconds);
         return values;
     }
 
@@ -81,7 +81,7 @@ public class DatetimeUtils {
         StringBuilder sentenceBuilder = new StringBuilder();
 
         int valueIndex;
-        for(valueIndex = 0; valueIndex <= 6; ++valueIndex) {
+        for (valueIndex = 0; valueIndex <= 6; ++valueIndex) {
             int value = values[valueIndex];
             if (value <= 0) {
                 continue;
@@ -99,7 +99,7 @@ public class DatetimeUtils {
     }
 
     public String getTimeAgo(String date) {
-        return convertToSentence((double)(-getSecondsBetweenNowAndDate(date)));
+        return convertToSentence((double) (-getSecondsBetweenNowAndDate(date)));
     }
 
     public long getSecondsBetweenNowAndDate(String date) {
@@ -109,6 +109,7 @@ public class DatetimeUtils {
             return -1L;
         }
     }
+
     public ZoneId getZoneId() {
         String time = "default";
         if (!time.equals("default")) {

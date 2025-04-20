@@ -9,13 +9,13 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 
 public class EntityChangeListener implements Listener {
 
-    public EntityChangeListener(){
+    public EntityChangeListener() {
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
     }
 
     @EventHandler
-    public void onEntityChangeBlock(EntityChangeBlockEvent event){
+    public void onEntityChangeBlock(EntityChangeBlockEvent event) {
         EggManager eggManager = Main.getInstance().getEggManager();
-        if(eggManager.containsEgg(event.getBlock())) event.setCancelled(true);
+        if (eggManager.containsEgg(event.getBlock())) event.setCancelled(true);
     }
 }

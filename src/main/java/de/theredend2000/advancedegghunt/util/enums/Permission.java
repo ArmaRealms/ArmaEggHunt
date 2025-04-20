@@ -12,10 +12,6 @@ public enum Permission {
     ChangeCollections,
     CreateCollection,
     OpenRewards;
-    @Override
-    public String toString() {
-        return "AdvancedEggHunt." + this.name();
-    }
 
     public static Permission getEnum(String value) {
         try {
@@ -25,6 +21,12 @@ public enum Permission {
             return null;
         }
     }
+
+    @Override
+    public String toString() {
+        return "AdvancedEggHunt." + this.name();
+    }
+
     public enum Command {
         placeEggs,
         eggImport,
@@ -40,11 +42,6 @@ public enum Permission {
         hint,
         reset;
 
-        @Override
-        public String toString() {
-            return "AdvancedEggHunt.Command." + this.name();
-        }
-
         public static Command getEnum(String value) {
             try {
                 return valueOf(value);
@@ -52,6 +49,11 @@ public enum Permission {
                 Main.getInstance().getLogger().log(Level.SEVERE, MessageFormat.format("Failed to convert {0} to Enum.", value), e);
                 return null;
             }
+        }
+
+        @Override
+        public String toString() {
+            return "AdvancedEggHunt.Command." + this.name();
         }
     }
 }

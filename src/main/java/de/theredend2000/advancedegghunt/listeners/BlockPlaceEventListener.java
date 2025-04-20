@@ -13,13 +13,13 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public class BlockPlaceEventListener implements Listener {
 
-    public BlockPlaceEventListener(){
+    public BlockPlaceEventListener() {
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
     }
 
 
     @EventHandler
-    public void onPlaceEggEvent(BlockPlaceEvent event){
+    public void onPlaceEggEvent(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         if (!Main.getInstance().getPlaceEggsPlayers().contains(player)) {
             return;
@@ -28,11 +28,11 @@ public class BlockPlaceEventListener implements Listener {
         EggManager eggManager = Main.getInstance().getEggManager();
         SoundManager soundManager = Main.getInstance().getSoundManager();
 
-        if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.PlaceEgg)){
+        if (Main.getInstance().getPermissionManager().checkPermission(player, Permission.PlaceEgg)) {
             String collection = eggManager.getEggCollectionFromPlayerData(player.getUniqueId());
             eggManager.saveEgg(player, event.getBlockPlaced().getLocation(), collection);
             player.playSound(player.getLocation(), soundManager.playEggPlaceSound(), soundManager.getSoundVolume(), 1);
-        }else
+        } else
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.PlaceEgg.toString()));
     }
 }

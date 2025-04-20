@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 
 public class HexColor {
 
-    public HexColor(){
+    public HexColor() {
 
     }
 
@@ -124,15 +124,13 @@ public class HexColor {
 
         if (color)
             stringBuilder.append(altColorChar);
-        else
-            if (hashtag) {
-                stringBuilder.append(altColorChar);
-                stringBuilder.append('#');
-            } else
-                if (doubleTag) {
-                    stringBuilder.append(altColorChar);
-                    stringBuilder.append("##");
-                }
+        else if (hashtag) {
+            stringBuilder.append(altColorChar);
+            stringBuilder.append('#');
+        } else if (doubleTag) {
+            stringBuilder.append(altColorChar);
+            stringBuilder.append("##");
+        }
 
         return stringBuilder.toString();
     }

@@ -31,8 +31,8 @@ public class MessageManager {
             return "Message not found: " + key.name();
         }
 
-        if(key.name().equals("EGG_NEARBY")) return HexColor.color(message);
-        if(prefix_enabled)
+        if (key.name().equals("EGG_NEARBY")) return HexColor.color(message);
+        if (prefix_enabled)
             message = HexColor.color(ChatColor.translateAlternateColorCodes('&', Main.PREFIX + message));
         else
             message = HexColor.color(ChatColor.translateAlternateColorCodes('&', message));

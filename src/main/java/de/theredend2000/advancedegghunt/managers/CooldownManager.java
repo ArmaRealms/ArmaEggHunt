@@ -13,7 +13,7 @@ public class CooldownManager {
 
     private final Main plugin;
 
-    public CooldownManager(Main plugin){
+    public CooldownManager(Main plugin) {
         this.plugin = plugin;
     }
 
@@ -38,20 +38,20 @@ public class CooldownManager {
     }
 
     public String getRemainingTime(long millis) {
-        long seconds = millis/1000;
+        long seconds = millis / 1000;
         long minutes = 0;
-        while(seconds > 60) {
-            seconds-=60;
+        while (seconds > 60) {
+            seconds -= 60;
             minutes++;
         }
         long hours = 0;
-        while(minutes > 60) {
-            minutes-=60;
+        while (minutes > 60) {
+            minutes -= 60;
             hours++;
         }
         long days = 0;
-        while(hours > 24) {
-            hours-=24;
+        while (hours > 24) {
+            hours -= 24;
             days++;
         }
         return Main.getInstance().getMessageManager().getMessage(MessageKey.HINT_COOLDOWN).replaceAll("%DAYS%", String.valueOf(days)).replaceAll("%HOURS%", String.valueOf(hours)).replaceAll("%MINUTES%", String.valueOf(minutes)).replaceAll("%SECONDS%", String.valueOf(seconds));

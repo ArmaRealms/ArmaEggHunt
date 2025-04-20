@@ -52,17 +52,17 @@ public class EggListMenu extends PaginatedInventoryMenu {
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         ArrayList<String> keys = new ArrayList<>();
-        if(placedEggs.contains("PlacedEggs.")){
+        if (placedEggs.contains("PlacedEggs.")) {
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
-        }else
+        } else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Eggs Placed").setLore("§7You can add eggs by using", "§e/egghunt placeEggs§7.").build());
 
         if (keys == null || keys.isEmpty()) {
             return;
         }
-        for(int i = 0; i < getMaxItemsPerPage(); i++) {
+        for (int i = 0; i < getMaxItemsPerPage(); i++) {
             index = getMaxItemsPerPage() * page + i;
-            if(index >= keys.size()) break;
+            if (index >= keys.size()) break;
             if (keys.get(index) == null) {
                 continue;
             }
@@ -82,10 +82,11 @@ public class EggListMenu extends PaginatedInventoryMenu {
     public int getMaxItemsPerPage() {
         return maxItemsPerPage;
     }
-    public int getMaxPages(){
+
+    public int getMaxPages() {
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         int keys = Main.getInstance().getEggManager().getMaxEggs(collection);
-        if(keys == 0) return 1;
+        if (keys == 0) return 1;
         return (int) Math.ceil((double) keys / getMaxItemsPerPage());
     }
 
@@ -97,14 +98,14 @@ public class EggListMenu extends PaginatedInventoryMenu {
         Player player = (Player) event.getWhoClicked();
 
         ArrayList<String> keys = new ArrayList<>();
-        if(placedEggs.contains("PlacedEggs.")){
+        if (placedEggs.contains("PlacedEggs.")) {
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
-            for(String id : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)){
+            for (String id : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)) {
                 if (!event.getCurrentItem().getItemMeta().hasLocalizedName() ||
                         !event.getCurrentItem().getItemMeta().getLocalizedName().equals(id)) {
                     continue;
                 }
-                if(event.getAction() == InventoryAction.PICKUP_ALL){
+                if (event.getAction() == InventoryAction.PICKUP_ALL) {
                     ConfigLocationUtil location = new ConfigLocationUtil(Main.getInstance(), "PlacedEggs." + id);
                     if (location.loadLocation(collection) != null)
                         player.teleport(location.loadLocation(collection).add(0.5, 0, 0.5));
@@ -112,7 +113,7 @@ public class EggListMenu extends PaginatedInventoryMenu {
                     player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.TELEPORT_TO_EGG).replaceAll("%ID%", id));
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                     return;
-                }else if(event.getAction() == InventoryAction.PICKUP_HALF){
+                } else if (event.getAction() == InventoryAction.PICKUP_HALF) {
                     new EggInformationMenu(Main.getPlayerMenuUtility(player)).open(id);
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                     return;
@@ -120,7 +121,7 @@ public class EggListMenu extends PaginatedInventoryMenu {
             }
         }
 
-        if(event.getCurrentItem().getType().equals(Material.PAPER) &&
+        if (event.getCurrentItem().getType().equals(Material.PAPER) &&
                 ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")) {
             new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
             return;

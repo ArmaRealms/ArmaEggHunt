@@ -15,21 +15,22 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Set;
+import java.util.UUID;
 
 public class PlayerChatEventListener implements Listener {
 
-    private MessageManager messageManager;
+    private final MessageManager messageManager;
 
-    public PlayerChatEventListener(){
+    public PlayerChatEventListener() {
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
         runTimeForPlayers();
         messageManager = Main.getInstance().getMessageManager();
     }
 
     @EventHandler
-    public void onPlayerChat(PlayerChatEvent event){
+    public void onPlayerChat(PlayerChatEvent event) {
         Player player = event.getPlayer();
-        if (!Main.getInstance().getPlayerAddCommand().containsKey(player)) {
+        if (!Main.getInstance().getPlayerAddCommand().containsKey(player.getUniqueId())) {
             return;
         }
         event.setCancelled(true);
@@ -41,18 +42,18 @@ public class PlayerChatEventListener implements Listener {
             FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
 
             if (event.getMessage().equalsIgnoreCase("cancel")) {
-                Main.getInstance().getPlayerAddCommand().remove(player);
+                Main.getInstance().getPlayerAddCommand().remove(player.getUniqueId());
                 player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_CANCEL));
                 new IndividualEggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
                 return;
             }
 
-            if(Main.getInstance().getPluginConfig().isCommandBlacklisted(event.getMessage())) {
+            if (Main.getInstance().getPluginConfig().isCommandBlacklisted(event.getMessage())) {
                 player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_BLACKLISTED));
                 return;
             }
-            addCommand(placedEggs, id, event.getMessage(), collection, player,"PlacedEggs." + id + ".Rewards.");
-            Main.getInstance().getPlayerAddCommand().remove(player);
+            addCommand(placedEggs, id, event.getMessage(), collection, player, "PlacedEggs." + id + ".Rewards.");
+            Main.getInstance().getPlayerAddCommand().remove(player.getUniqueId());
             playerConfig.set("Change", null);
             Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
             new IndividualEggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
@@ -64,29 +65,31 @@ public class PlayerChatEventListener implements Listener {
             FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
 
             if (event.getMessage().equalsIgnoreCase("cancel")) {
-                Main.getInstance().getPlayerAddCommand().remove(player);
+                Main.getInstance().getPlayerAddCommand().remove(player.getUniqueId());
                 player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_CANCEL));
                 new GlobalEggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
                 return;
             }
 
-            if(Main.getInstance().getPluginConfig().isCommandBlacklisted(event.getMessage())) {
+            if (Main.getInstance().getPluginConfig().isCommandBlacklisted(event.getMessage())) {
                 player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_BLACKLISTED));
                 return;
             }
-            addCommand(placedEggs, id, event.getMessage(), collection, player,"GlobalRewards.");
-            Main.getInstance().getPlayerAddCommand().remove(player);
+            addCommand(placedEggs, id, event.getMessage(), collection, player, "GlobalRewards.");
+            Main.getInstance().getPlayerAddCommand().remove(player.getUniqueId());
             playerConfig.set("GlobalChange", null);
             Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
             new GlobalEggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
-            return;
         }
     }
 
-    public void addCommand(FileConfiguration placedEggs, String id, String command, String collection, Player player,String path){
+    public void addCommand(FileConfiguration placedEggs, String id, String command, String collection, Player player, String path) {
         if (placedEggs.contains(path)) {
             ConfigurationSection rewardsSection = placedEggs.getConfigurationSection(path);
             int nextNumber = 0;
+            if (rewardsSection == null) {
+                rewardsSection = placedEggs.createSection(path);
+            }
             Set<String> keys = rewardsSection.getKeys(false);
             if (!keys.isEmpty()) {
                 for (int i = 0; i <= keys.size(); i++) {
@@ -97,14 +100,15 @@ public class PlayerChatEventListener implements Listener {
                     }
                 }
             }
-            setConfiguration(String.valueOf(nextNumber), id , command, collection,path);
-            player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ADD).replaceAll("%ID%", String.valueOf(nextNumber)));
+            setConfiguration(String.valueOf(nextNumber), command, collection, path);
+            player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ADD).replace("%ID%", String.valueOf(nextNumber)));
         } else {
-            setConfiguration("0", id , command, collection,path);
-            player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ADD).replaceAll("%ID%", "0"));
+            setConfiguration("0", command, collection, path);
+            player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ADD).replace("%ID%", "0"));
         }
     }
-    private void setConfiguration(String commandID, String id, String command, String collection,String path){
+
+    private void setConfiguration(String commandID, String command, String collection, String path) {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         placedEggs.set(path + commandID + ".command", command);
         placedEggs.set(path + commandID + ".enabled", true);
@@ -112,24 +116,25 @@ public class PlayerChatEventListener implements Listener {
         Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
     }
 
-    private void runTimeForPlayers(){
+    private void runTimeForPlayers() {
         new BukkitRunnable() {
             @Override
             public void run() {
-                for(Player player : Main.getInstance().getPlayerAddCommand().keySet()){
-                    FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(player.getUniqueId());
-                    int currenttime = Main.getInstance().getPlayerAddCommand().get(player);
-                    Main.getInstance().getPlayerAddCommand().remove(player);
-                    if(currenttime == 0){
-                        if(player != null){
+                for (UUID uuid : Main.getInstance().getPlayerAddCommand().keySet()) {
+                    FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
+                    int currenttime = Main.getInstance().getPlayerAddCommand().get(uuid);
+                    Main.getInstance().getPlayerAddCommand().remove(uuid);
+                    if (currenttime == 0) {
+                        if (uuid != null) {
+                            Player player = Bukkit.getPlayer(uuid);
                             player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_EXPIRED));
                             playerConfig.set("Change", null);
                             playerConfig.set("GlobalChange", null);
-                            Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
+                            Main.getInstance().getPlayerEggDataManager().savePlayerData(uuid, playerConfig);
                         }
                         return;
                     }
-                    Main.getInstance().getPlayerAddCommand().put(player, currenttime-1);
+                    Main.getInstance().getPlayerAddCommand().put(uuid, currenttime - 1);
                 }
             }
         }.runTaskTimer(Main.getInstance(), 0, 20);

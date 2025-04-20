@@ -10,7 +10,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 public abstract class Configuration {
@@ -19,14 +23,12 @@ public abstract class Configuration {
     protected File configFile = null;
     protected String configName;
     private double latestVersion;
-    private boolean template;
-
-    public abstract TreeMap<Double, ConfigUpgrader> getUpgrader();
-
+    private final boolean template;
 
     public Configuration(JavaPlugin plugin, String configName) {
         this(plugin, configName, true, -1d);
     }
+
 
     public Configuration(JavaPlugin plugin, String configName, double latestVersion) {
         this(plugin, configName, true, latestVersion);
@@ -49,6 +51,20 @@ public abstract class Configuration {
         registerUpgrader();
         loadConfig();
     }
+
+    public static void deleteDir(File file) {
+        File[] contents = file.listFiles();
+        if (contents != null) {
+            for (File f : contents) {
+                if (!Files.isSymbolicLink(f.toPath())) {
+                    deleteDir(f);
+                }
+            }
+        }
+        file.delete();
+    }
+
+    public abstract TreeMap<Double, ConfigUpgrader> getUpgrader();
 
     public abstract void registerUpgrader();
 
@@ -97,6 +113,7 @@ public abstract class Configuration {
 
         saveConfig();
     }
+
     private void standardUpgrade(YamlConfiguration oldConfig, YamlConfiguration newConfig) {
         Set<String> allKeys = oldConfig.getKeys(true);
 
@@ -159,18 +176,6 @@ public abstract class Configuration {
         } catch (IOException ex) {
             this.plugin.getLogger().log(Level.SEVERE, MessageFormat.format("Could not save config to {0}", this.configFile), ex);
         }
-    }
-
-    public static void deleteDir(File file) {
-        File[] contents = file.listFiles();
-        if (contents != null) {
-            for (File f : contents) {
-                if (! Files.isSymbolicLink(f.toPath())) {
-                    deleteDir(f);
-                }
-            }
-        }
-        file.delete();
     }
 
     public interface ConfigUpgrader {

@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 public class InventoryConfig extends Configuration {
-    private static TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
+    private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
 
     public InventoryConfig(JavaPlugin plugin, UUID configName) {
         super(plugin, MessageFormat.format("invs/{0}.yml", configName.toString()), false);

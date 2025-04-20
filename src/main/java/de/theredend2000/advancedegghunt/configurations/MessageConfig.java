@@ -6,7 +6,7 @@ import java.text.MessageFormat;
 import java.util.TreeMap;
 
 public class MessageConfig extends Configuration {
-    private static TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
+    private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
 
     private static volatile MessageConfig instance;
 

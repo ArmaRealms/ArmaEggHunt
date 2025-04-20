@@ -11,16 +11,15 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public class InventoryCloseEventListener implements Listener {
 
-    public InventoryCloseEventListener(){
+    public InventoryCloseEventListener() {
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
     }
 
     @EventHandler
-    public void onClose(InventoryCloseEvent event){
-        if (!(event.getPlayer() instanceof Player)) {
+    public void onClose(InventoryCloseEvent event) {
+        if (!(event.getPlayer() instanceof Player player)) {
             return;
         }
-        Player player = (Player) event.getPlayer();
 
         if (HintMenu.hintMenuInstances.containsKey(player.getUniqueId())) {
             HintMenu.hintMenuInstances.get(player.getUniqueId()).cancelHintMenu();

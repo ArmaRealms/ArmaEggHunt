@@ -45,7 +45,9 @@ public class HintMenu extends InventoryMenu {
 
         playerMenuUtility.getOwner().openInventory(getInventory());
 
-        for (int i = 0; i < getInventory().getSize(); i++){getInventory().setItem(i, new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayname("§c").build());}
+        for (int i = 0; i < getInventory().getSize(); i++) {
+            getInventory().setItem(i, new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayname("§c").build());
+        }
 
         new BukkitRunnable() {
             @Override
@@ -55,7 +57,7 @@ public class HintMenu extends InventoryMenu {
         }.runTaskLater(Main.getInstance(), 10);
     }
 
-    private void restartFailedTask(){
+    private void restartFailedTask() {
         if (failTask != null) failTask.cancel();
 
         failTask = new BukkitRunnable() {
@@ -75,7 +77,7 @@ public class HintMenu extends InventoryMenu {
             playerMenuUtility.getOwner().sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_HINT_TIMEOUT));
             return;
         }
-        if(!clickedCorrectSlot) {
+        if (!clickedCorrectSlot) {
             fail(playerMenuUtility.getOwner());
             playerMenuUtility.getOwner().sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.CLICKED_SAME));
             return;
@@ -87,7 +89,7 @@ public class HintMenu extends InventoryMenu {
         clickedCorrectSlot = false;
     }
 
-    private int getRandomSlot(){
+    private int getRandomSlot() {
         int nextNum;
         do {
             nextNum = random.nextInt(getInventory().getSize());
@@ -95,7 +97,7 @@ public class HintMenu extends InventoryMenu {
         return nextNum;
     }
 
-    public void fail(Player player){
+    public void fail(Player player) {
         if (Main.getInstance().getPluginConfig().getHintApplyCooldownOnFail())
             Main.getInstance().getCooldownManager().setCooldown(playerMenuUtility.getOwner());
 
@@ -112,9 +114,9 @@ public class HintMenu extends InventoryMenu {
             failTask.cancel();
     }
 
-    public String getReward(Player player){
+    public String getReward(Player player) {
         Main plugin = Main.getInstance();
-        for(String collection : plugin.getEggDataManager().savedEggCollections()) {
+        for (String collection : plugin.getEggDataManager().savedEggCollections()) {
             if (!Main.getInstance().getEggManager().containsPlayer(player.getName())) {
                 continue;
             }

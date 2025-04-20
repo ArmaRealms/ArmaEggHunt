@@ -13,18 +13,23 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class RequirementsManager {
 
-    private Main plugin;
+    private final Main plugin;
 
-    public RequirementsManager(){
+    public RequirementsManager() {
         this.plugin = Main.getInstance();
     }
 
-    public List<String> getListRequirementsLore(String collection){
+    public List<String> getListRequirementsLore(String collection) {
         String pre = "Requirements.";
         ArrayList<String> lore = new ArrayList<>();
         lore.add("§6§lListed:");
@@ -43,13 +48,13 @@ public class RequirementsManager {
                         counter++;
                     }
                 }
-                if(counter == 0) {
+                if (counter == 0) {
                     lore.add("  §cN/A");
                 }
-                if(counter > 3)
-                    lore.add("  §7§o+" + (counter-3) + " more...");
+                if (counter > 3)
+                    lore.add("  §7§o+" + (counter - 3) + " more...");
             }
-        }else{
+        } else {
             lore.add("§dHours:");
             lore.add("  §cN/A");
         }
@@ -67,13 +72,13 @@ public class RequirementsManager {
                         counter++;
                     }
                 }
-                if(counter == 0) {
+                if (counter == 0) {
                     lore.add("  §cN/A");
                 }
-                if(counter > 3)
-                    lore.add("  §7§o+" + (counter-3) + " more...");
+                if (counter > 3)
+                    lore.add("  §7§o+" + (counter - 3) + " more...");
             }
-        } else{
+        } else {
             lore.add("§dDates:");
             lore.add("  §cN/A");
         }
@@ -91,13 +96,13 @@ public class RequirementsManager {
                         counter++;
                     }
                 }
-                if(counter == 0) {
+                if (counter == 0) {
                     lore.add("  §cN/A");
                 }
-                if(counter > 3)
-                    lore.add("  §7§o+" + (counter-3) + " more...");
+                if (counter > 3)
+                    lore.add("  §7§o+" + (counter - 3) + " more...");
             }
-        }else{
+        } else {
             lore.add("§dWeekdays:");
             lore.add("  §cN/A");
         }
@@ -115,13 +120,13 @@ public class RequirementsManager {
                         counter++;
                     }
                 }
-                if(counter == 0) {
+                if (counter == 0) {
                     lore.add("  §cN/A");
                 }
-                if(counter > 3)
-                    lore.add("  §7§o+" + (counter-3) + " more...");
+                if (counter > 3)
+                    lore.add("  §7§o+" + (counter - 3) + " more...");
             }
-        }else{
+        } else {
             lore.add("§dMonths:");
             lore.add("  §cN/A");
         }
@@ -139,13 +144,13 @@ public class RequirementsManager {
                         counter++;
                     }
                 }
-                if(counter == 0) {
+                if (counter == 0) {
                     lore.add("  §cN/A");
                 }
-                if(counter > 3)
-                    lore.add("  §7§o+" + (counter-3) + " more...");
+                if (counter > 3)
+                    lore.add("  §7§o+" + (counter - 3) + " more...");
             }
-        }else{
+        } else {
             lore.add("§dYears:");
             lore.add("  §cN/A");
         }
@@ -163,13 +168,13 @@ public class RequirementsManager {
                         counter++;
                     }
                 }
-                if(counter == 0) {
+                if (counter == 0) {
                     lore.add("  §cN/A");
                 }
-                if(counter > 3)
-                    lore.add("  §7§o+" + (counter-3) + " more...");
+                if (counter > 3)
+                    lore.add("  §7§o+" + (counter - 3) + " more...");
             }
-        } else{
+        } else {
             lore.add("§dSeasons:");
             lore.add("  §cN/A");
         }
@@ -178,7 +183,7 @@ public class RequirementsManager {
         return lore;
     }
 
-    public boolean canBeAccessed(String collection){
+    public boolean canBeAccessed(String collection) {
         String pre = "Requirements.";
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         String currentHour = String.valueOf(LocalTime.now().getHour());
@@ -229,28 +234,28 @@ public class RequirementsManager {
         return isContained;
     }
 
-    public void changeActivity(String collection, boolean active){
+    public void changeActivity(String collection, boolean active) {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
-        for(int i = 0; i < 24; i++){
+        for (int i = 0; i < 24; i++) {
             placedEggs.set("Requirements.Hours." + i, active);
         }
-        for(String weekday : DateTimeUtil.getWeekList()){
+        for (String weekday : DateTimeUtil.getWeekList()) {
             placedEggs.set("Requirements.Weekday." + weekday, active);
         }
-        for(String month : DateTimeUtil.getMonthList()){
+        for (String month : DateTimeUtil.getMonthList()) {
             placedEggs.set("Requirements.Month." + month, active);
         }
         int currentYear = DateTimeUtil.getCurrentYear();
-        for (int year = currentYear; year < (currentYear + 28);year++) {
+        for (int year = currentYear; year < (currentYear + 28); year++) {
             placedEggs.set("Requirements.Year." + year, active);
         }
-        for(String season : DateTimeUtil.getSeasonList()){
+        for (String season : DateTimeUtil.getSeasonList()) {
             placedEggs.set("Requirements.Season." + season, active);
         }
         plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
     }
 
-    public void resetReset(String collection){
+    public void resetReset(String collection) {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         placedEggs.set("Reset.Year", 0);
         placedEggs.set("Reset.Month", 0);
@@ -261,7 +266,7 @@ public class RequirementsManager {
         plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
     }
 
-    public int getOverallTime(String collection){
+    public int getOverallTime(String collection) {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         int years = placedEggs.getInt("Reset.Year") * 365 * 24 * 60 * 60;
         int months = placedEggs.getInt("Reset.Month") * 30 * 24 * 60 * 60;
@@ -304,18 +309,18 @@ public class RequirementsManager {
         if (duration >= 1) {
             seconds = duration;
         }
-        if(years == 0 && months == 0 && days == 0 && hours == 0 && minutes == 0 && seconds == 0)
+        if (years == 0 && months == 0 && days == 0 && hours == 0 && minutes == 0 && seconds == 0)
             return "§4§lNEVER";
         else
             return years + "Y " + months + "M " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
     }
 
-    public void removeAllEggBlocks(String collection, UUID uuid){
+    public void removeAllEggBlocks(String collection, UUID uuid) {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         if (!placedEggs.contains("PlacedEggs.")) {
             return;
         }
-        for(String ids : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)){
+        for (String ids : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)) {
             int x = placedEggs.getInt("PlacedEggs." + ids + ".X");
             int y = placedEggs.getInt("PlacedEggs." + ids + ".Y");
             int z = placedEggs.getInt("PlacedEggs." + ids + ".Z");
@@ -329,9 +334,9 @@ public class RequirementsManager {
             Location location = new Location(world, x, y, z);
             Block block = location.getBlock();
             DeletionTypes deletionTypes = Main.getInstance().getPlayerEggDataManager().getDeletionType(uuid);
-            switch (deletionTypes){
+            switch (deletionTypes) {
                 case Player_Heads:
-                    if(block.getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()) || block.getType().equals(XMaterial.PLAYER_WALL_HEAD.parseMaterial())){
+                    if (block.getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()) || block.getType().equals(XMaterial.PLAYER_WALL_HEAD.parseMaterial())) {
                         new Location(world, x, y, z).getBlock().setType(org.bukkit.Material.AIR);
                         Bukkit.getConsoleSender().sendMessage("§aSuccessfully changed block at " + x + " " + y + " " + z + " to air.");
                     }
@@ -346,45 +351,45 @@ public class RequirementsManager {
         Main.getInstance().getEggDataManager().reload();
     }
 
-    public String getActives(Requirements requirements, String collection){
+    public String getActives(Requirements requirements, String collection) {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
-        switch (requirements){
+        switch (requirements) {
             case Hours:
                 int hours = 0;
-                for(int i = 0; i < 24; i++){
+                for (int i = 0; i < 24; i++) {
                     boolean enabled = placedEggs.getBoolean("Requirements.Hours." + i);
-                    if(enabled) hours++;
+                    if (enabled) hours++;
                 }
                 return hours + "/24";
             case Date:
                 return "§4DISABLED";
             case Weekday:
                 int weekdays = 0;
-                for(String weekday : DateTimeUtil.getWeekList()){
+                for (String weekday : DateTimeUtil.getWeekList()) {
                     boolean enabled = placedEggs.getBoolean("Requirements.Weekday." + weekday);
-                    if(enabled) weekdays++;
+                    if (enabled) weekdays++;
                 }
                 return weekdays + "/7";
             case Month:
                 int months = 0;
-                for(String month : DateTimeUtil.getMonthList()){
+                for (String month : DateTimeUtil.getMonthList()) {
                     boolean enabled = placedEggs.getBoolean("Requirements.Month." + month);
-                    if(enabled) months++;
+                    if (enabled) months++;
                 }
                 return months + "/12";
             case Year:
                 int years = 0;
                 int currentYear = DateTimeUtil.getCurrentYear();
-                for (int year = currentYear; year < (currentYear + 28);year++) {
+                for (int year = currentYear; year < (currentYear + 28); year++) {
                     boolean enabled = placedEggs.getBoolean("Requirements.Year." + year);
-                    if(enabled) years++;
+                    if (enabled) years++;
                 }
                 return years + "/28";
             case Season:
                 int seasons = 0;
-                for(String season : DateTimeUtil.getSeasonList()){
+                for (String season : DateTimeUtil.getSeasonList()) {
                     boolean enabled = placedEggs.getBoolean("Requirements.Season." + season);
-                    if(enabled) seasons++;
+                    if (enabled) seasons++;
                 }
                 return seasons + "/4";
         }

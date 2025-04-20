@@ -9,13 +9,18 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.util.UUID;
 
 public class ConfigLocationUtil {
-    private Main plugin;
-    private Location location;
-    private String root;
-    public ConfigLocationUtil(Main plugin, Location location, String root){
+    private final Main plugin;
+    private final Location location;
+    private final String root;
+
+    public ConfigLocationUtil(Main plugin, Location location, String root) {
         this.plugin = plugin;
         this.location = location;
         this.root = root;
+    }
+
+    public ConfigLocationUtil(Main plugin, String root) {
+        this(plugin, null, root);
     }
 
     public void saveBlockLocation(String collection) {
@@ -40,9 +45,6 @@ public class ConfigLocationUtil {
         plugin.getPlayerEggDataManager().savePlayerData(uuid, config);
     }
 
-    public ConfigLocationUtil(Main plugin, String root) {
-        this(plugin, null, root);
-    }
     public Location loadLocation(String collection) {
         FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(collection);
         if (config.contains(root)) {

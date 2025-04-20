@@ -20,15 +20,15 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
 public class BlockBreakEventListener implements Listener {
 
-    private MessageManager messageManager;
+    private final MessageManager messageManager;
 
-    public BlockBreakEventListener(){
+    public BlockBreakEventListener() {
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
         messageManager = Main.getInstance().getMessageManager();
     }
 
     @EventHandler
-    public void onDestroyEgg(BlockBreakEvent event){
+    public void onDestroyEgg(BlockBreakEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
 
@@ -39,16 +39,16 @@ public class BlockBreakEventListener implements Listener {
             return;
         }
         String collection = eggManager.getEggCollection(block);
-        if(Main.getInstance().getPlaceEggsPlayers().contains(player)) {
-            if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.BreakEgg)){
+        if (Main.getInstance().getPlaceEggsPlayers().contains(player)) {
+            if (Main.getInstance().getPermissionManager().checkPermission(player, Permission.BreakEgg)) {
                 eggManager.removeEgg(player, block, collection);
                 player.playSound(player.getLocation(), soundManager.playEggBreakSound(), soundManager.getSoundVolume(), 1);
-            }else {
+            } else {
                 player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.BreakEgg.toString()));
                 event.setCancelled(true);
             }
-        }else {
-            if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.BreakEgg))
+        } else {
+            if (Main.getInstance().getPermissionManager().checkPermission(player, Permission.BreakEgg))
                 player.sendMessage(messageManager.getMessage(MessageKey.ONLY_IN_PLACEMODE));
             event.setCancelled(true);
         }
@@ -60,24 +60,24 @@ public class BlockBreakEventListener implements Listener {
         Block toblock = event.getToBlock();
         EggManager eggManager = Main.getInstance().getEggManager();
 
-        if(eggManager.containsEgg(toblock))
+        if (eggManager.containsEgg(toblock))
             event.setCancelled(true);
     }
 
     @EventHandler
     public void onPlayerBucketFillEvent(PlayerBucketEmptyEvent event) {
-        var version = Bukkit.getBukkitVersion().split("-",2);
+        var version = Bukkit.getBukkitVersion().split("-", 2);
 
         if (VersionComparator.isLessThan(version[0], "1.14.4")) return;
         Block block = event.getBlock();
         EggManager eggManager = Main.getInstance().getEggManager();
 
-        if(eggManager.containsEgg(block))
+        if (eggManager.containsEgg(block))
             event.setCancelled(true);
     }
 
     @EventHandler
-    public void onExplode(EntityExplodeEvent event){
+    public void onExplode(EntityExplodeEvent event) {
         EggManager eggManager = Main.getInstance().getEggManager();
         event.blockList().removeIf(eggManager::containsEgg);
     }

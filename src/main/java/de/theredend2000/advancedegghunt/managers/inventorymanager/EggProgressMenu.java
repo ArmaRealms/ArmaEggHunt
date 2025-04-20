@@ -51,18 +51,18 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         addMenuBorderButtons();
         ArrayList<String> keys = new ArrayList<>();
-        if(placedEggs.contains("PlacedEggs.")){
+        if (placedEggs.contains("PlacedEggs.")) {
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
-        }else
+        } else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Eggs Available").setLore("§7There are no eggs no find", "§7please contact an admin.").build());
 
         if (keys == null || keys.isEmpty()) {
             return;
         }
 
-        for(int i = 0; i < getMaxItemsPerPage(); i++) {
+        for (int i = 0; i < getMaxItemsPerPage(); i++) {
             index = getMaxItemsPerPage() * page + i;
-            if(index >= keys.size()) break;
+            if (index >= keys.size()) break;
             if (keys.get(index) == null) {
                 continue;
             }
@@ -76,11 +76,11 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
             int random = new Random().nextInt(7);
             String date = Main.getInstance().getEggManager().getEggDateCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
             String time = Main.getInstance().getEggManager().getEggTimeCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
-            if(showcoordinates && hasFound){
+            if (showcoordinates && hasFound) {
                 getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("", "§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet."), "", "§9Collected:", "§7Date: §6" + date, "§7Time: §6" + time, "").setLocalizedName(keys.get(index)).build());
-            }else if(hasFound && !showcoordinates) {
+            } else if (hasFound && !showcoordinates) {
                 getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet."), "", "§9Collected:", "§7Date: §6" + date, "§7Time: §6" + time, "").setLocalizedName(keys.get(index)).build());
-            }else
+            } else
                 getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet.")).setLocalizedName(keys.get(index)).build());
         }
     }
@@ -89,10 +89,10 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
         return maxItemsPerPage;
     }
 
-    public int getMaxPages(){
+    public int getMaxPages() {
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         int keys = Main.getInstance().getEggManager().getMaxEggs(collection);
-        if(keys == 0) return 1;
+        if (keys == 0) return 1;
         return (int) Math.ceil((double) keys / getMaxItemsPerPage());
     }
 
@@ -104,12 +104,12 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
         Player player = (Player) event.getWhoClicked();
 
         ArrayList<String> keys = new ArrayList<>();
-        if (placedEggs.contains("PlacedEggs.")){
+        if (placedEggs.contains("PlacedEggs.")) {
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
         }
 
         if (event.getCurrentItem().getType().equals(Material.PAPER) &&
-                ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
+                ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")) {
             new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
             return;
         }

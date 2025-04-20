@@ -16,7 +16,7 @@ public class GlobalPresetDataManager {
     private final Main plugin;
     private final File dataFolder;
     private HashMap<String, FileConfiguration> presetConfigs;
-    private HashMap<String, File> presetFile;
+    private final HashMap<String, File> presetFile;
 
     public GlobalPresetDataManager(Main plugin) {
         this.plugin = plugin;
@@ -25,7 +25,7 @@ public class GlobalPresetDataManager {
         presetFile = new HashMap<>();
 
         dataFolder.mkdirs();
-        if(savedPresets().size() == 0){
+        if (savedPresets().size() == 0) {
             createPresetFile("default");
             addDefaultRewardCommands("default");
         }
@@ -44,19 +44,19 @@ public class GlobalPresetDataManager {
 
     private void loadPresetData(String preset) {
         FileConfiguration config = getPresets(preset);
-        if(!presetConfigs.containsKey(preset))
+        if (!presetConfigs.containsKey(preset))
             this.presetConfigs.put(preset, config);
     }
 
     private File getFile(String preset) {
-        if(!presetFile.containsKey(preset))
+        if (!presetFile.containsKey(preset))
             presetFile.put(preset, new File(this.dataFolder, preset + ".yml"));
         return presetFile.get(preset);
     }
 
     public FileConfiguration getPresets(String preset) {
         File playerFile = this.getFile(preset);
-        if(!presetConfigs.containsKey(preset))
+        if (!presetConfigs.containsKey(preset))
             this.presetConfigs.put(preset, YamlConfiguration.loadConfiguration(playerFile));
         return presetConfigs.get(preset);
     }
@@ -69,11 +69,11 @@ public class GlobalPresetDataManager {
         }
     }
 
-    public void loadCommandsIntoPreset(String preset, String collection){
+    public void loadCommandsIntoPreset(String preset, String collection) {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         FileConfiguration presets = getPresets(preset);
-        if(placedEggs.contains("GlobalRewards.")) {
-            for (String commandID : placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false)){
+        if (placedEggs.contains("GlobalRewards.")) {
+            for (String commandID : placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false)) {
                 String command = placedEggs.getString("GlobalRewards." + commandID + ".command");
                 boolean enabled = placedEggs.getBoolean("GlobalRewards." + commandID + ".enabled");
                 presets.set("Commands." + commandID + ".command", command);
@@ -83,12 +83,12 @@ public class GlobalPresetDataManager {
         }
     }
 
-    public void loadPresetIntoCollectionCommands(String preset, String collection){
+    public void loadPresetIntoCollectionCommands(String preset, String collection) {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         FileConfiguration presets = getPresets(preset);
         placedEggs.set("GlobalRewards", null);
         Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
-        for (String commandID : presets.getConfigurationSection("Commands.").getKeys(false)){
+        for (String commandID : presets.getConfigurationSection("Commands.").getKeys(false)) {
             String command = presets.getString("Commands." + commandID + ".command");
             boolean enabled = presets.getBoolean("Commands." + commandID + ".enabled");
             placedEggs.set("GlobalRewards." + commandID + ".command", command);
@@ -97,21 +97,21 @@ public class GlobalPresetDataManager {
         }
     }
 
-    public List<String> getAllCommandsAsLore(String preset, boolean isDefault){
+    public List<String> getAllCommandsAsLore(String preset, boolean isDefault) {
         List<String> lore = new ArrayList<>();
         lore.clear();
         lore.add(" ");
         lore.add("§9Commands:");
         FileConfiguration presets = getPresets(preset);
         int counter = 0;
-        for (String commandID : presets.getConfigurationSection("Commands.").getKeys(false)){
-            if(counter < 10)
+        for (String commandID : presets.getConfigurationSection("Commands.").getKeys(false)) {
+            if (counter < 10)
                 lore.add("§7- §b" + presets.getString("Commands." + commandID + ".command"));
             counter++;
         }
-        if(counter > 10)
-            lore.add("  §7§o+" + (counter-10) + " more...");
-        if(isDefault){
+        if (counter > 10)
+            lore.add("  §7§o+" + (counter - 10) + " more...");
+        if (isDefault) {
             lore.add(" ");
             lore.add("§2This preset is selected as default preset.");
             lore.add("§2It will be loaded every time a new egg is created.");
@@ -162,7 +162,7 @@ public class GlobalPresetDataManager {
             if (playerFiles != null) {
                 int playerFilesLength = playerFiles.length;
 
-                for(int i = 0; i < playerFilesLength; ++i) {
+                for (int i = 0; i < playerFilesLength; ++i) {
                     File playerFile = playerFiles[i];
                     String fileName = playerFile.getName();
                     String collectionName = fileName.substring(0, fileName.length() - 4);

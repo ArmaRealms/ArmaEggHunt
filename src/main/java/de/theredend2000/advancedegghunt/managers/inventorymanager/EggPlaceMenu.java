@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class EggPlaceMenu extends PaginatedInventoryMenu {
-    private MessageManager messageManager;
+    private final MessageManager messageManager;
 
     public EggPlaceMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Eggs place list", (short) 54);
@@ -75,23 +75,23 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
 
         ArrayList<String> keys = new ArrayList<>();
-        if(Main.getInstance().getPluginConfig().hasPlaceEggs()){
+        if (Main.getInstance().getPluginConfig().hasPlaceEggs()) {
             keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
-        }else
+        } else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Eggs").setLore("§7You can add commands by using", "§e/egghunt placeEggs§7.").build());
-        if (keys == null || keys.isEmpty()) {
+        if (keys.isEmpty()) {
             return;
         }
-        for(int i = 0; i < getMaxItemsPerPage(); i++) {
+        for (int i = 0; i < getMaxItemsPerPage(); i++) {
             index = getMaxItemsPerPage() * page + i;
-            if(index >= keys.size()) break;
+            if (index >= keys.size()) break;
             if (keys.get(index) == null) {
                 continue;
             }
             int slotIndex = ((9 + 1) + ((i / 7) * 9) + (i % 7));
 
-            XMaterial mat = Main.getInstance().getMaterial(Objects.requireNonNull(Main.getInstance().getPluginConfig().getPlaceEggType(keys.get(index))).toUpperCase());
-            if(mat.equals(XMaterial.PLAYER_HEAD))
+            XMaterial mat = Main.getMaterial(Objects.requireNonNull(Main.getInstance().getPluginConfig().getPlaceEggType(keys.get(index))).toUpperCase());
+            if (mat.equals(XMaterial.PLAYER_HEAD))
                 getInventory().setItem(slotIndex, new ItemBuilder(mat)
                         .setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(keys.get(index))))
                         .setDisplayname("§b§lEggs Type #" + keys.get(index))
@@ -105,12 +105,13 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
     public int getMaxItemsPerPage() {
         return maxItemsPerPage;
     }
-    public int getMaxPages(){
+
+    public int getMaxPages() {
         ArrayList<String> keys = new ArrayList<>();
-        if(Main.getInstance().getPluginConfig().hasPlaceEggs()){
+        if (Main.getInstance().getPluginConfig().hasPlaceEggs()) {
             keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
         }
-        if(keys.isEmpty()) return 1;
+        if (keys.isEmpty()) return 1;
         return (int) Math.ceil((double) keys.size() / getMaxItemsPerPage());
     }
 
@@ -119,7 +120,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player player = (Player) event.getWhoClicked();
 
-        if(super.playerMenuUtility.getOwner().getInventory().equals(event.getClickedInventory())) {
+        if (super.playerMenuUtility.getOwner().getInventory().equals(event.getClickedInventory())) {
             Set<String> keys = Main.getInstance().getPluginConfig().getPlaceEggIds();
             String fullTexture = NBT.get(event.getCurrentItem(), nbt -> {
                 final ReadableNBT skullOwnerCompound = nbt.getCompound("SkullOwner");
@@ -133,8 +134,8 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
             });
 
             if (fullTexture != null) fullTexture = fullTexture.replaceFirst(".+?mUv", "");
-            for(String key : keys){
-                if(event.getCurrentItem().getType().name().equalsIgnoreCase(Main.getInstance().getPluginConfig().getPlaceEggType(key)) &&
+            for (String key : keys) {
+                if (event.getCurrentItem().getType().name().equalsIgnoreCase(Main.getInstance().getPluginConfig().getPlaceEggType(key)) &&
                         !(event.getCurrentItem().getType().name().equalsIgnoreCase(XMaterial.PLAYER_HEAD.name()) &&
                                 fullTexture != null &&
                                 !Objects.equals(Main.getInstance().getPluginConfig().getPlaceEggTexture(key), fullTexture))) {
@@ -163,9 +164,9 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
         }
 
         ArrayList<String> keys = new ArrayList<>();
-        if(Main.getInstance().getPluginConfig().hasPlaceEggs()){
+        if (Main.getInstance().getPluginConfig().hasPlaceEggs()) {
             keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
-            for(String id : keys){
+            for (String id : keys) {
                 if (!event.getCurrentItem().getItemMeta().hasLocalizedName() ||
                         !event.getCurrentItem().getItemMeta().getLocalizedName().equals(id)) {
                     continue;
@@ -182,7 +183,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
             }
         }
 
-        if(event.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
+        if (event.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")) {
             new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
             return;
         }

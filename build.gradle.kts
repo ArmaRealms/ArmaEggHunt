@@ -55,7 +55,7 @@ version = "3.0.4"
 description = "AdvancedEggHunt"
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 tasks {

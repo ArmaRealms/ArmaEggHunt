@@ -4,27 +4,66 @@ import de.theredend2000.advancedegghunt.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.logging.Level;
 
 public class Downloader {
 
-    private Main plugin;
+    private final Main plugin;
 
-    public Downloader(){
+    public Downloader() {
         this.plugin = Main.getInstance();
 
         try {
             String downloadFile = new File(plugin.getDataFolder().getParent()).getAbsolutePath();
-            if(plugin.getPluginConfig().getAutoDownloadNBTAPI())
+            if (plugin.getPluginConfig().getAutoDownloadNBTAPI())
                 downloadPluginFromModrinth("eade5ea05429a49826a5c33a306a8592b47551d3", downloadFile);
             /*if(plugin.getPluginConfig().getAutoDownloadAdvancedEggHunt() && check is outdated)
                 downloadPluginFromSpigot(109085, downloadFile); //returns 403*/
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String getFilenameFromModrinthAPI(String versionId) {
+        String apiUrl = "https://api.modrinth.com/v2/project/" + versionId + "/version";
+
+        try {
+            URL url = new URL(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            String jsonResponse = response.toString();
+            return parseFilenameFromJSON(jsonResponse);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static String parseFilenameFromJSON(String jsonResponse) {
+        int startIndex = jsonResponse.indexOf("\"filename\":") + 12;
+        int endIndex = jsonResponse.indexOf("\",", startIndex);
+        return jsonResponse.substring(startIndex, endIndex);
     }
 
     public void downloadPluginFromSpigot(int pluginId, String saveDir) throws IOException {
@@ -67,7 +106,7 @@ public class Downloader {
     }
 
     public void downloadPluginFromModrinth(String hash, String saveDir) throws IOException {
-        String fileURL = "https://api.modrinth.com/v2/version_file/"+hash+"/download";
+        String fileURL = "https://api.modrinth.com/v2/version_file/" + hash + "/download";
         URL url = new URL(fileURL);
         HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
         int responseCode = httpConn.getResponseCode();
@@ -80,7 +119,7 @@ public class Downloader {
 
             String saveFilePath = saveDir + File.separator + fileName;
             File outputFile = new File(saveFilePath);
-            if(outputFile.exists()) return;
+            if (outputFile.exists()) return;
 
             InputStream inputStream = httpConn.getInputStream();
             OutputStream outputStream = new FileOutputStream(saveFilePath);
@@ -100,40 +139,6 @@ public class Downloader {
             plugin.getLogger().log(Level.WARNING, "No plugin to download from Modrinth. Server replied HTTP code: " + responseCode);
         }
         httpConn.disconnect();
-    }
-
-    public static String getFilenameFromModrinthAPI(String versionId) {
-        String apiUrl = "https://api.modrinth.com/v2/project/" + versionId+"/version";
-
-        try {
-            URL url = new URL(apiUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuilder response = new StringBuilder();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
-
-            String jsonResponse = response.toString();
-            return parseFilenameFromJSON(jsonResponse);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-
-    public static String parseFilenameFromJSON(String jsonResponse) {
-        int startIndex = jsonResponse.indexOf("\"filename\":") + 12;
-        int endIndex = jsonResponse.indexOf("\",", startIndex);
-        return jsonResponse.substring(startIndex, endIndex);
     }
 
     private void loadPlugin(String filePath) {

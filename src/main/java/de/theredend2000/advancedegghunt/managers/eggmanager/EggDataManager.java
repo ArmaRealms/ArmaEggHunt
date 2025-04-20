@@ -6,14 +6,18 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 
 public class EggDataManager {
 
     private final Main plugin;
     private final File dataFolder;
     private HashMap<String, FileConfiguration> eggCollectionsConfigs;
-    private HashMap<String, File> eggsFile;
+    private final HashMap<String, File> eggsFile;
 
     public EggDataManager(Main plugin) {
         this.plugin = plugin;
@@ -24,7 +28,7 @@ public class EggDataManager {
         dataFolder.mkdirs();
         new File(dataFolder, "playerdata").mkdirs();
         new File(dataFolder, "eggs").mkdirs();
-        if(savedEggCollections().size() < 1) {
+        if (savedEggCollections().size() < 1) {
             createEggCollectionFile("default", true);
             Main.setupDefaultCollection = true;
         }
@@ -51,24 +55,24 @@ public class EggDataManager {
 
     private void loadEggData(String collection) {
         FileConfiguration config = getPlacedEggs(collection);
-        if(!eggCollectionsConfigs.containsKey(collection))
+        if (!eggCollectionsConfigs.containsKey(collection))
             this.eggCollectionsConfigs.put(collection, config);
     }
 
     private File getFile(String collection) {
-        if(!eggsFile.containsKey(collection))
+        if (!eggsFile.containsKey(collection))
             eggsFile.put(collection, new File(this.dataFolder + "/eggs/", collection + ".yml"));
         return eggsFile.get(collection);
     }
 
     public FileConfiguration getPlacedEggs(String collection) {
         File playerFile = this.getFile(collection);
-        if(!eggCollectionsConfigs.containsKey(collection))
+        if (!eggCollectionsConfigs.containsKey(collection))
             this.eggCollectionsConfigs.put(collection, YamlConfiguration.loadConfiguration(playerFile));
         return eggCollectionsConfigs.get(collection);
     }
 
-    public void setRewards(String commandID, String command, String collection,String path){
+    public void setRewards(String commandID, String command, String collection, String path) {
         FileConfiguration placedEggs = getPlacedEggs(collection);
         placedEggs.set(path + commandID + ".command", command);
         placedEggs.set(path + commandID + ".enabled", true);
@@ -110,8 +114,8 @@ public class EggDataManager {
                 return false;
             }
 
-            collection = (String)savedEggCollectionsIterator.next();
-        } while(!collection.contains(section));
+            collection = (String) savedEggCollectionsIterator.next();
+        } while (!collection.contains(section));
 
         return true;
     }
@@ -126,7 +130,7 @@ public class EggDataManager {
             if (playerFiles != null) {
                 int playerFilesLength = playerFiles.length;
 
-                for(int i = 0; i < playerFilesLength; ++i) {
+                for (int i = 0; i < playerFilesLength; ++i) {
                     File playerFile = playerFiles[i];
                     String fileName = playerFile.getName();
                     String collectionName = fileName.substring(0, fileName.length() - 4);
@@ -154,7 +158,7 @@ public class EggDataManager {
             if (playerFiles != null) {
                 int playerFilesLength = playerFiles.length;
 
-                for(int i = 0; i < playerFilesLength; ++i) {
+                for (int i = 0; i < playerFilesLength; ++i) {
                     File playerFile = playerFiles[i];
                     String fileName = playerFile.getName();
                     UUID playerUUID = UUID.fromString(fileName.substring(0, fileName.length() - 4));

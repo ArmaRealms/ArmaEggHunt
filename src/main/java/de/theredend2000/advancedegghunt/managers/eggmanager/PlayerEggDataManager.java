@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.UUID;
 
 public class PlayerEggDataManager {
-    private Main plugin;
-    private File dataFolder;
+    private final Main plugin;
+    private final File dataFolder;
     private HashMap<UUID, FileConfiguration> playerConfigs;
-    private HashMap<UUID, File> playerFiles;
+    private final HashMap<UUID, File> playerFiles;
 
     public PlayerEggDataManager() {
         plugin = Main.getInstance();
@@ -39,19 +39,19 @@ public class PlayerEggDataManager {
 
     public void initPlayers() {
         List<UUID> savedPlayers = new ArrayList<>(plugin.getEggDataManager().savedPlayers());
-        for(UUID uuid : savedPlayers)
+        for (UUID uuid : savedPlayers)
             getPlayerData(uuid);
     }
 
     private File getFile(UUID uuid) {
-        if(!playerFiles.containsKey(uuid))
+        if (!playerFiles.containsKey(uuid))
             playerFiles.put(uuid, new File(this.dataFolder + "/playerdata/", uuid + ".yml"));
         return playerFiles.get(uuid);
     }
 
     public FileConfiguration getPlayerData(UUID uuid) {
         File playerFile = this.getFile(uuid);
-        if(!playerConfigs.containsKey(uuid)) {
+        if (!playerConfigs.containsKey(uuid)) {
             this.playerConfigs.put(uuid, YamlConfiguration.loadConfiguration(playerFile));
         }
         return playerConfigs.get(uuid);
@@ -103,7 +103,7 @@ public class PlayerEggDataManager {
         FileConfiguration cfg = getPlayerData(uuid);
         int currentSeconds = Main.getInstance().getRequirementsManager().getOverallTime(collection);
         if (currentSeconds != 0) {
-            long toSet = System.currentTimeMillis() + (long)currentSeconds * 1000L;
+            long toSet = System.currentTimeMillis() + (long) currentSeconds * 1000L;
             cfg.set("FoundEggs." + collection + "." + id + ".ResetCooldown", toSet);
 
             try {
@@ -125,16 +125,16 @@ public class PlayerEggDataManager {
         return current > millis;
     }
 
-    public void checkReset(){
+    public void checkReset() {
         new BukkitRunnable() {
             @Override
             public void run() {
-                for(UUID uuid : plugin.getEggDataManager().savedPlayers()){
+                for (UUID uuid : plugin.getEggDataManager().savedPlayers()) {
                     FileConfiguration cfg = playerConfigs.get(uuid);
-                    if(cfg == null) continue;
-                    if(!cfg.contains("FoundEggs.")) continue;
-                    for(String collection : cfg.getConfigurationSection("FoundEggs.").getKeys(false)) {
-                        for(String eggId : cfg.getConfigurationSection("FoundEggs." + collection).getKeys(false)) {
+                    if (cfg == null) continue;
+                    if (!cfg.contains("FoundEggs.")) continue;
+                    for (String collection : cfg.getConfigurationSection("FoundEggs.").getKeys(false)) {
+                        for (String eggId : cfg.getConfigurationSection("FoundEggs." + collection).getKeys(false)) {
                             if (eggId.equals("Count") || eggId.equals("Name")) continue;
                             if (canReset(uuid, collection, eggId))
                                 plugin.getEggManager().resetStatsPlayerEgg(uuid, collection, eggId);

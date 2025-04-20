@@ -14,10 +14,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import java.util.ArrayList;
 
 public class IndividualPresetsMenu extends PaginatedInventoryMenu {
-    private MessageManager messageManager;
-    private Main plugin;
+    private final MessageManager messageManager;
+    private final Main plugin;
     private String id;
     private String collection;
+
     public IndividualPresetsMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Individual Presets", (short) 54);
         this.plugin = Main.getInstance();
@@ -52,28 +53,28 @@ public class IndividualPresetsMenu extends PaginatedInventoryMenu {
 
         IndividualPresetDataManager presetDataManager = Main.getInstance().getIndividualPresetDataManager();
         ArrayList<String> keys = new ArrayList<>();
-        if(presetDataManager.savedPresets().size() >= 1){
+        if (presetDataManager.savedPresets().size() >= 1) {
             keys.addAll(presetDataManager.savedPresets());
-        }else
+        } else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Presets").setLore("§7Create new one to select them.").build());
         if (keys == null || keys.isEmpty()) {
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Presets").setLore("§7Create new one to select them.").build());
             return;
         }
-        for(int i = 0; i < maxItemsPerPage; i++) {
+        for (int i = 0; i < maxItemsPerPage; i++) {
             index = maxItemsPerPage * page + i;
-            if(index >= keys.size()) break;
-            if (keys.get(index) != null){
+            if (index >= keys.size()) break;
+            if (keys.get(index) != null) {
                 String defaultPreset = plugin.getPluginConfig().getDefaultIndividualLoadingPreset();
                 getInventory().addItem(new ItemBuilder(XMaterial.PAPER).setDisplayname("§b§l" + keys.get(index)).setDefaultLore(presetDataManager.getAllCommandsAsLore(keys.get(index), keys.get(index).equals(defaultPreset))).setLocalizedName(keys.get(index)).build());
             }
         }
     }
 
-    public int getMaxPages(){
+    public int getMaxPages() {
         IndividualPresetDataManager presetDataManager = Main.getInstance().getIndividualPresetDataManager();
         ArrayList<String> keys = new ArrayList<>(presetDataManager.savedPresets());
-        if(keys.isEmpty()) return 1;
+        if (keys.isEmpty()) return 1;
         return (int) Math.ceil((double) keys.size() / maxItemsPerPage);
     }
 
@@ -81,9 +82,9 @@ public class IndividualPresetsMenu extends PaginatedInventoryMenu {
     public void handleMenu(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
         IndividualPresetDataManager presetDataManager = Main.getInstance().getIndividualPresetDataManager();
-        if(event.getCurrentItem() == null) return;
+        if (event.getCurrentItem() == null) return;
 
-        for(String presetName : presetDataManager.savedPresets()){
+        for (String presetName : presetDataManager.savedPresets()) {
             if (!ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals(presetName)) {
                 continue;
             }

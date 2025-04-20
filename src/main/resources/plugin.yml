@@ -2,7 +2,7 @@ name: AdvancedEggHunt
 version: '${version}'
 main: de.theredend2000.advancedegghunt.Main
 api-version: 1.13
-softdepend: [PlaceholderAPI, Oraxen]
+softdepend: [ PlaceholderAPI, Oraxen ]
 website: https://www.spigotmc.org/resources/advancedegghunt.109085/
 authors: [ TheRedEnd2000, GrafterCrafter ]
 

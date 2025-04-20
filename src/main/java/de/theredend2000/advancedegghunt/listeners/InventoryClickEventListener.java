@@ -13,15 +13,15 @@ import org.bukkit.inventory.InventoryHolder;
 
 public class InventoryClickEventListener implements Listener {
 
-    private MessageManager messageManager;
+    private final MessageManager messageManager;
 
-    public InventoryClickEventListener(){
+    public InventoryClickEventListener() {
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
         messageManager = Main.getInstance().getMessageManager();
     }
 
     @EventHandler
-    public void onClickInventory(InventoryClickEvent event){
+    public void onClickInventory(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player) ||
                 event.getCurrentItem() == null ||
                 event.getCurrentItem().getItemMeta() == null) {
@@ -29,13 +29,12 @@ public class InventoryClickEventListener implements Listener {
         }
 
         InventoryHolder holder = event.getInventory().getHolder();
-        if (holder instanceof IInventoryMenu) {
+        if (holder instanceof IInventoryMenu menu) {
             event.setCancelled(true);
-            if(event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);
+            if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);
             if (event.getCurrentItem() == null) {
                 return;
             }
-            IInventoryMenu menu = (IInventoryMenu) holder;
             menu.handleMenu(event);
         }
     }

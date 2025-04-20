@@ -32,7 +32,7 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
         playerMenuUtility.getOwner().openInventory(getInventory());
     }
 
-    public void addMenuBorderButtons(){
+    public void addMenuBorderButtons() {
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build();
         inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§aRefresh").build();
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("NWYxMzNlOTE5MTlkYjBhY2VmZGMyNzJkNjdmZDg3YjRiZTg4ZGM0NGE5NTg5NTg4MjQ0NzRlMjFlMDZkNTNlNiJ9fX0=")).setDisplayname("§eBack").build();
@@ -51,19 +51,19 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
         ArrayList<String> keys = new ArrayList<>();
         ArrayList<String> uuid = new ArrayList<>();
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
-        for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
+        for (UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()) {
             FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids);
-            if(playerConfig.contains("FoundEggs." + collection + "." + eggId)){
+            if (playerConfig.contains("FoundEggs." + collection + "." + eggId)) {
                 Collections.addAll(keys, playerConfig.getString("FoundEggs." + collection + ".Name"));
                 Collections.addAll(uuid, String.valueOf(uuids));
             }
         }
 
-        if(keys != null && !keys.isEmpty()) {
-            for(int i = 0; i < getMaxItemsPerPage(); i++) {
+        if (keys != null && !keys.isEmpty()) {
+            for (int i = 0; i < getMaxItemsPerPage(); i++) {
                 index = getMaxItemsPerPage() * page + i;
-                if(index >= keys.size()) break;
-                if (keys.get(index) != null){
+                if (index >= keys.size()) break;
+                if (keys.get(index) != null) {
                     String maxEggs = String.valueOf(Main.getInstance().getEggManager().getMaxEggs(collection));
                     String date = Main.getInstance().getEggManager().getEggDateCollected(uuid.get(index), eggId, collection);
                     String time = Main.getInstance().getEggManager().getEggTimeCollected(uuid.get(index), eggId, collection);
@@ -75,7 +75,7 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
                             .setLocalizedName(keys.get(index)).build());
                 }
             }
-        }else
+        } else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Founds").setLore("§7No player has found this egg yet.").build());
     }
 
@@ -86,13 +86,13 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
         String id = getInventory().getItem(0).getItemMeta().getLocalizedName();
         ArrayList<String> keys = new ArrayList<>();
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
-        for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
-            if(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).contains("FoundEggs." + id)){
+        for (UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()) {
+            if (Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).contains("FoundEggs." + id)) {
                 Collections.addAll(keys, Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + collection + ".Name"));
             }
         }
 
-        if(event.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
+        if (event.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")) {
             new CollectionSelectMenu(Main.getPlayerMenuUtility(p)).open();
             return;
         }
@@ -146,15 +146,15 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
         return maxItemsPerPage;
     }
 
-    public int getMaxPages(String eggId){
+    public int getMaxPages(String eggId) {
         ArrayList<String> keys = new ArrayList<>();
-        for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
+        for (UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()) {
             FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids);
-            if(playerConfig.contains("FoundEggs." + eggId)){
+            if (playerConfig.contains("FoundEggs." + eggId)) {
                 Collections.addAll(keys, playerConfig.getString("FoundEggs.Name"));
             }
         }
-        if(keys.isEmpty()) return 1;
+        if (keys.isEmpty()) return 1;
         return (int) Math.ceil((double) keys.size() / getMaxItemsPerPage());
     }
 }

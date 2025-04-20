@@ -18,8 +18,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import java.util.Random;
 
 public class ResetMenu extends InventoryMenu {
-    private MessageManager messageManager;
-    private Main plugin;
+    private final MessageManager messageManager;
+    private final Main plugin;
 
     public ResetMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Reset - Selection", (short) 54);
@@ -37,7 +37,7 @@ public class ResetMenu extends InventoryMenu {
     }
 
     private void addMenuBorderButtons(String collection) {
-        inventoryContent[4] =  new ItemBuilder(XMaterial.PLAYER_HEAD)
+        inventoryContent[4] = new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setSkullOwner(plugin.getEggManager().getRandomEggTexture(new Random().nextInt(7)))
                 .setDisplayname("§6" + collection).build();
 

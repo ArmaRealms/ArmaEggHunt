@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class RequirementWeekday extends InventoryMenu {
-    private MessageManager messageManager;
     protected int maxItems;
-    private Main plugin;
+    private final MessageManager messageManager;
+    private final Main plugin;
 
     public RequirementWeekday(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Requirements - Weekday", (short) 54, XMaterial.WHITE_STAINED_GLASS_PANE);
@@ -36,7 +36,7 @@ public class RequirementWeekday extends InventoryMenu {
     }
 
     private void addMenuBorderButtons(String collection) {
-        inventoryContent[4]  = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§6" + collection).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).build();
+        inventoryContent[4] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§6" + collection).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build();
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§eBack").setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).build();
     }
@@ -44,15 +44,15 @@ public class RequirementWeekday extends InventoryMenu {
     private void menuContent(String collection) {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         getInventory().setContents(inventoryContent);
-        for(String weekdays : new ArrayList<>(DateTimeUtil.getWeekList())){
+        for (String weekdays : new ArrayList<>(DateTimeUtil.getWeekList())) {
             boolean enabled = placedEggs.getBoolean("Requirements.Weekday." + weekdays);
-            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.LIME_BED : XMaterial.RED_STAINED_GLASS).setDisplayname("§6" + weekdays).setLore("§7Makes that the eggs are only", "§7available on the weekday " + weekdays, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" " + weekdays + " to the requirements.").withGlow(enabled).build());
+            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.LIME_BED : XMaterial.RED_STAINED_GLASS).setDisplayname("§6" + weekdays).setLore("§7Makes that the eggs are only", "§7available on the weekday " + weekdays, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to " + (enabled ? "remove" : "add") + " " + weekdays + " to the requirements.").withGlow(enabled).build());
         }
     }
 
     @Override
     public void handleMenu(InventoryClickEvent event) {
-        Player player  = (Player) event.getWhoClicked();
+        Player player = (Player) event.getWhoClicked();
 
         String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);

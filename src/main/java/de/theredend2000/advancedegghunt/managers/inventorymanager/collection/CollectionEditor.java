@@ -21,7 +21,7 @@ import java.util.Random;
 import java.util.UUID;
 
 public class CollectionEditor extends InventoryMenu {
-    private MessageManager messageManager;
+    private final MessageManager messageManager;
 
     public CollectionEditor(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Collection editor", (short) 45);
@@ -53,7 +53,7 @@ public class CollectionEditor extends InventoryMenu {
         getInventory().setItem(13, new ItemBuilder(XMaterial.COMPARATOR).setDisplayname("§3Requirements").setDefaultLore(Main.getInstance().getRequirementsManager().getListRequirementsLore(collection)).build());
         getInventory().setItem(31, new ItemBuilder(XMaterial.REPEATER).setDisplayname("§3Reset §e§l(BETA)").setLore("", "§cResets after:", "§6  " + Main.getInstance().getRequirementsManager().getConvertedTime(collection), "", "§4If the time get changed, the value", "§4of the current cooldown of the", "§4player will not change!", "", "§eClick to change.").build());
 
-        getInventory().setItem(44,  new ItemBuilder(XMaterial.WOODEN_AXE).setDisplayname("§3Deletion Types")
+        getInventory().setItem(44, new ItemBuilder(XMaterial.WOODEN_AXE).setDisplayname("§3Deletion Types")
                 .setLore("§8Every player can configure that himself.",
                         "§7Change what happens after the deletion",
                         "§7of an collection.",

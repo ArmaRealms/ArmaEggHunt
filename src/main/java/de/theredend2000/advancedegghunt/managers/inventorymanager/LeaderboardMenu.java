@@ -14,7 +14,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class LeaderboardMenu extends PaginatedInventoryMenu {
     private int numberOfPlayers = 0;
@@ -61,20 +66,12 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
 
         LeaderboardSortTypes sortTypes = Main.getInstance().getSortTypeLeaderboard().get(playerMenuUtility.getOwner());
         ItemBuilder itemBuilder = new ItemBuilder(XMaterial.HOPPER).setDisplayname("§2Sort");
-        switch (sortTypes){
-            case ALL:
-                itemBuilder = itemBuilder.setLore("", "§6 ➤ Show the complete leaderboard", "§7Show only the top 10", "§7Show only the top 3", "§7Show only you", "", "§eClick to switch");
-                break;
-            case TOP10:
-                itemBuilder = itemBuilder.setLore("", "§7Show the complete leaderboard", "§6➤ Show only the top 10", "§7Show only the top 3", "§7Show only you", "", "§eClick to switch");
-                break;
-            case TOP3:
-                itemBuilder = itemBuilder.setLore("", "§7Show the complete leaderboard", "§7Show only the top 10", "§6➤ Show only the top 3", "§7Show only you", "", "§eClick to switch");
-                break;
-            case YOU:
-                itemBuilder = itemBuilder.setLore("", "§7Show the complete leaderboard", "§7Show only the top 10", "§7Show only the top 3", "§6➤ Show only you", "", "§eClick to switch");
-                break;
-        }
+        itemBuilder = switch (sortTypes) {
+            case ALL -> itemBuilder.setLore("", "§6 ➤ Show the complete leaderboard", "§7Show only the top 10", "§7Show only the top 3", "§7Show only you", "", "§eClick to switch");
+            case TOP10 -> itemBuilder.setLore("", "§7Show the complete leaderboard", "§6➤ Show only the top 10", "§7Show only the top 3", "§7Show only you", "", "§eClick to switch");
+            case TOP3 -> itemBuilder.setLore("", "§7Show the complete leaderboard", "§7Show only the top 10", "§6➤ Show only the top 3", "§7Show only you", "", "§eClick to switch");
+            case YOU -> itemBuilder.setLore("", "§7Show the complete leaderboard", "§7Show only the top 10", "§7Show only the top 3", "§6➤ Show only you", "", "§eClick to switch");
+        };
         getInventory().setItem(51, itemBuilder.build());
 
         if (Main.getInstance().getEggDataManager().savedPlayers().isEmpty()) {
@@ -84,7 +81,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
 
         HashMap<String, Integer> leaderboard = new HashMap<>();
 
-        for(UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
+        for (UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
             FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
             if (!playerConfig.contains("FoundEggs") || !playerConfig.contains("FoundEggs." + collection)) continue;
 
@@ -106,7 +103,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
             index = 0;
             numberOfPlayers = 1;
 
-            for(int i = 0; i < leaderboard.size(); i++) {
+            for (int i = 0; i < leaderboard.size(); i++) {
                 String playerName = leaderList.get(i).getKey();
                 if (!playerName.equals(playerMenuUtility.getOwner().getName())) {
                     continue;
@@ -124,9 +121,9 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
             return;
         }
 
-        for(int i = 0; i < getMaxItemsPerPage(); i++) {
+        for (int i = 0; i < getMaxItemsPerPage(); i++) {
             index = (getMaxItemsPerPage() * page) + i;
-            if(index >= leaderboard.size()) break;
+            if (index >= leaderboard.size()) break;
             int slotIndex = ((9 + 1) + ((i / 7) * 9) + (i % 7));
 
             String playerName = leaderList.get(index).getKey();
@@ -162,15 +159,15 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
         return maxItemsPerPage;
     }
 
-    public int getMaxPages(){
+    public int getMaxPages() {
         HashMap<String, Integer> leaderboard = new HashMap<>();
-        if(Main.getInstance().getEggDataManager().savedPlayers() != null){
-            for(UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
+        if (Main.getInstance().getEggDataManager().savedPlayers() != null) {
+            for (UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
                 FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
                 leaderboard.put(playerConfig.getString("FoundEggs.Name"), playerConfig.getInt("FoundEggs.Count"));
             }
         }
-        if(leaderboard.isEmpty()) return 1;
+        if (leaderboard.isEmpty()) return 1;
         return (int) Math.ceil((double) leaderboard.size() / getMaxItemsPerPage());
     }
 
@@ -179,18 +176,18 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player player = (Player) event.getWhoClicked();
 
-        if(event.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
+        if (event.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")) {
             new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
             return;
         }
 
         XMaterial material = XMaterial.matchXMaterial(event.getCurrentItem());
         switch (material) {
-            case BARRIER:
+            case BARRIER -> {
                 player.closeInventory();
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                break;
-            case EMERALD_BLOCK:
+            }
+            case EMERALD_BLOCK -> {
                 if (Main.getInstance().getRefreshCooldown().containsKey(player.getName())) {
                     if (Main.getInstance().getRefreshCooldown().get(player.getName()) > System.currentTimeMillis()) {
                         player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
@@ -201,8 +198,8 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
                 Main.getInstance().getRefreshCooldown().put(player.getName(), System.currentTimeMillis() + (3 * 1000));
                 open();
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                break;
-            case PLAYER_HEAD:
+            }
+            case PLAYER_HEAD -> {
                 if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
                     if (page == 0) {
                         player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
@@ -213,7 +210,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                     }
                 } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")) {
-                    if (!((index + 1) >= numberOfPlayers)) {
+                    if ((index + 1) <= numberOfPlayers) {
                         page = page + 1;
                         reopen();
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
@@ -222,27 +219,27 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
                         player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                     }
                 }
-                break;
-            case HOPPER:
-                LeaderboardSortTypes sortTypes = Main.getInstance().getSortTypeLeaderboard().get(playerMenuUtility.getOwner());
-                Main.getInstance().getSortTypeLeaderboard().remove(playerMenuUtility.getOwner());
+            }
+            case HOPPER -> {
+                LeaderboardSortTypes sortTypes = Main.getInstance().getSortTypeLeaderboard().get(playerMenuUtility.getOwner().getUniqueId());
+                Main.getInstance().getSortTypeLeaderboard().remove(playerMenuUtility.getOwner().getUniqueId());
                 switch (sortTypes) {
                     case ALL:
-                        Main.getInstance().getSortTypeLeaderboard().put(playerMenuUtility.getOwner(), LeaderboardSortTypes.TOP10);
+                        Main.getInstance().getSortTypeLeaderboard().put(playerMenuUtility.getOwner().getUniqueId(), LeaderboardSortTypes.TOP10);
                         break;
                     case TOP10:
-                        Main.getInstance().getSortTypeLeaderboard().put(playerMenuUtility.getOwner(), LeaderboardSortTypes.TOP3);
+                        Main.getInstance().getSortTypeLeaderboard().put(playerMenuUtility.getOwner().getUniqueId(), LeaderboardSortTypes.TOP3);
                         break;
                     case TOP3:
-                        Main.getInstance().getSortTypeLeaderboard().put(playerMenuUtility.getOwner(), LeaderboardSortTypes.YOU);
+                        Main.getInstance().getSortTypeLeaderboard().put(playerMenuUtility.getOwner().getUniqueId(), LeaderboardSortTypes.YOU);
                         break;
                     case YOU:
-                        Main.getInstance().getSortTypeLeaderboard().put(playerMenuUtility.getOwner(), LeaderboardSortTypes.ALL);
+                        Main.getInstance().getSortTypeLeaderboard().put(playerMenuUtility.getOwner().getUniqueId(), LeaderboardSortTypes.ALL);
                         break;
                 }
                 player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                 open();
-                break;
+            }
         }
     }
 }

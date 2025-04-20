@@ -9,7 +9,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 
 import java.util.Random;
 
-public class ExtraManager{
+public class ExtraManager {
 
     public void spawnFireworkRocket(Location location) {
         Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK);

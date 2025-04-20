@@ -6,7 +6,7 @@ import java.text.MessageFormat;
 import java.util.TreeMap;
 
 public class EggConfig extends Configuration {
-    private static TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
+    private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
 
     public EggConfig(JavaPlugin plugin, String configName) {
         super(plugin, MessageFormat.format("eggs/{0}.yml", configName), false);

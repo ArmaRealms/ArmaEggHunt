@@ -10,9 +10,8 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 public class InventoryOpenEventListener implements Listener {
 
     @EventHandler
-    public void onOpen(InventoryOpenEvent event){
-        if(event.getPlayer() instanceof Player) {
-            Player player = (Player) event.getPlayer();
+    public void onOpen(InventoryOpenEvent event) {
+        if (event.getPlayer() instanceof Player player) {
             if (event.getView().getTitle().equals("Egg Rewards") && !Main.getInstance().getPermissionManager().checkPermission(player, Permission.OpenRewards)) {
                 player.kickPlayer("§4YOU ARE NOT ALLOWED IN THIS INVENTORY");
             }
